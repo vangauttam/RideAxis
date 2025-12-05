@@ -8,7 +8,7 @@ public class RegDriverVehicleDTO {
 	private long mobileno;
 	private String gender;
 	private String mailid;
-	private String v_name;
+	private String vname;
 	private String vehicleno;
 	private String type;
 	private String model;
@@ -58,11 +58,11 @@ public class RegDriverVehicleDTO {
 	public void setMailid(String mailid) {
 		this.mailid = mailid;
 	}
-	public String getV_name() {
-		return v_name;
+	public String getVname() {
+		return vname;
 	}
-	public void setV_name(String v_name) {
-		this.v_name = v_name;
+	public void setVname(String vname) {
+		this.vname = vname;
 	}
 	public String getVehicleno() {
 		return vehicleno;
@@ -107,7 +107,7 @@ public class RegDriverVehicleDTO {
 		this.priceperkm = priceperkm;
 	}
 	public RegDriverVehicleDTO(String licenceno, String upiid, String dname, int age, long mobileno, String gender,
-			String mailid, String v_name, String vehicleno, String type, String model, int capacity, double latitude,
+			String mailid, String vname, String vehicleno, String type, String model, int capacity, double latitude,
 			double longitude, double priceperkm) {
 		super();
 		this.licenceno = licenceno;
@@ -117,7 +117,7 @@ public class RegDriverVehicleDTO {
 		this.mobileno = mobileno;
 		this.gender = gender;
 		this.mailid = mailid;
-		this.v_name = v_name;
+		this.vname = vname;
 		this.vehicleno = vehicleno;
 		this.type = type;
 		this.model = model;
@@ -133,7 +133,7 @@ public class RegDriverVehicleDTO {
 	@Override
 	public String toString() {
 		return "RegDriverVehicleDTO [licenceno=" + licenceno + ", upiid=" + upiid + ", dname=" + dname + ", age=" + age
-				+ ", mobileno=" + mobileno + ", gender=" + gender + ", mailid=" + mailid + ", v_name=" + v_name
+				+ ", mobileno=" + mobileno + ", gender=" + gender + ", mailid=" + mailid + ", vname=" + vname
 				+ ", vehicleno=" + vehicleno + ", type=" + type + ", model=" + model + ", capacity=" + capacity
 				+ ", latitude=" + latitude + ", longitude=" + longitude + ", priceperkm=" + priceperkm + "]";
 	}
