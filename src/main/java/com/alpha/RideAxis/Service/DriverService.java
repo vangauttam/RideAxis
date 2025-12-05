@@ -112,6 +112,57 @@ public class DriverService {
 
         return rs;
     }
+    // 👉 FIND DRIVER BY MOBILE NUMBER
+    public ResponseStructure<Driver> findDriverByMobile(long mobno) {
+
+        Driver driver = dr.findByMobileno(mobno);
+
+        ResponseStructure<Driver> rs = new ResponseStructure<>();
+
+        if (driver == null) {
+            rs.setStatuscode(404);
+            rs.setMessage("Driver not found for mobile number: " + mobno);
+            rs.setData(null);
+            return rs;
+        }
+
+        rs.setStatuscode(200);
+        rs.setMessage("Driver found successfully");
+        rs.setData(driver);
+
+        return rs;
+    }
+    public ResponseStructure<String> deleteDriverByMobile(long mobno) {
+
+        ResponseStructure<String> rs = new ResponseStructure<>();
+
+        Driver driver = dr.findByMobileno(mobno);
+
+        if (driver == null) {
+            rs.setStatuscode(404);
+            rs.setMessage("Driver not found with mobile number: " + mobno);
+            rs.setData(null);
+            return rs;
+        }
+
+        // First delete vehicle associated with driver
+        Vehicle vehicle = driver.getVehicle();
+        if (vehicle != null) {
+            vr.delete(vehicle);
+        }
+
+        // Delete driver
+        dr.delete(driver);
+
+        rs.setStatuscode(200);
+        rs.setMessage("Driver deleted successfully");
+        rs.setData("Deleted driver with mobile: " + mobno);
+
+        return rs;
+    }
+
+
+    
 }
 
     

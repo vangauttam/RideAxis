@@ -7,6 +7,8 @@ import com.alpha.RideAxis.Entites.Driver;
 
 @Repository
 public interface DriverRepository extends JpaRepository<Driver, Long> {
+	Driver findByMobileno(long mobileno);
+
 
 }
 

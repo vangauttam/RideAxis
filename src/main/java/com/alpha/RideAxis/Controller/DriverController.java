@@ -37,5 +37,26 @@ public class DriverController {
         ResponseStructure<Vehicle> response = ds.updateCurrentCity(driverId, dto);
         return ResponseEntity.status(response.getStatuscode()).body(response);
     }
+    @GetMapping("/FindDriver")
+    public ResponseEntity<ResponseStructure<Driver>> findDriver(
+            @RequestParam long mobno) {
+
+        ResponseStructure<Driver> response = ds.findDriverByMobile(mobno);
+
+        return ResponseEntity
+                .status(response.getStatuscode())
+                .body(response);
+    }
+    @DeleteMapping("/deleteDriver")
+    public ResponseEntity<ResponseStructure<String>> deleteDriver(@RequestParam long mobno) {
+
+        ResponseStructure<String> response = ds.deleteDriverByMobile(mobno);
+
+        return ResponseEntity
+                .status(response.getStatuscode())
+                .body(response);
+    }
+
+
 
 }
