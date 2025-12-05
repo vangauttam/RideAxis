@@ -1,0 +1,118 @@
+package com.alpha.RideAxis.Service;
+
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import com.alpha.RideAxis.DTO.RegDriverVehicleDTO;
+import com.alpha.RideAxis.DTO.CurrentLocationDTO;
+import com.alpha.RideAxis.Entites.Driver;
+import com.alpha.RideAxis.Entites.Vehicle;
+import com.alpha.RideAxis.Repository.DriverRepository;
+import com.alpha.RideAxis.Repository.VehicleRepository;
+import com.alpha.RideAxis.ResponseStructure;
+
+@Service
+public class DriverService {
+
+    @Autowired
+    private DriverRepository dr;
+
+    @Autowired
+    private VehicleRepository vr;
+    
+    @Autowired
+    private RestTemplate restTemplate; 
+
+    public ResponseStructure<Driver> registerDriverWithVehicle(RegDriverVehicleDTO dto) {
+
+        Driver driver = new Driver();
+        driver.setLicenceno(dto.getLicenceno());
+        driver.setUpiid(dto.getUpiid());
+        driver.setDname(dto.getDname());
+        driver.setAge(dto.getAge());
+        driver.setMobileno(dto.getMobileno());
+        driver.setGender(dto.getGender());
+        driver.setMailid(dto.getMailid());
+
+        Vehicle vehicle = new Vehicle();
+        vehicle.setVname(dto.getV_name());
+        vehicle.setVehicleno(dto.getVehicleno());
+        vehicle.setType(dto.getType());
+        vehicle.setModel(dto.getModel());
+        vehicle.setCapacity(dto.getCapacity());
+        vehicle.setPriceperkm(dto.getPriceperkm()); 
+        
+        
+        driver.setVehicle(vehicle);
+        vehicle.setDriver(driver);
+
+        driver = dr.save(driver);
+
+        vehicle.setVehicleid(driver.getDriverid());
+        vr.save(vehicle);
+
+        ResponseStructure<Driver> rs = new ResponseStructure<>();
+        rs.setStatuscode(HttpStatus.CREATED.value());
+        rs.setMessage("Driver and Vehicle registered successfully");
+        rs.setData(driver);
+
+        return rs;
+    } 
+    @Value("${locationiq.api.key}")
+    private String locationApiKey;
+
+    @Value("${locationiq.api.url}")
+    private String locationApiUrl;
+
+    public ResponseStructure<Vehicle> updateCurrentCity(long driverId, CurrentLocationDTO dto) {
+
+        ResponseStructure<Vehicle> rs = new ResponseStructure<>();
+
+        Driver driver = dr.findById(driverId).orElse(null);
+        if (driver == null) {
+            rs.setStatuscode(HttpStatus.NOT_FOUND.value());
+            rs.setMessage("Driver not found");
+            rs.setData(null);
+            return rs;
+        }
+
+        Vehicle vehicle = driver.getVehicle();
+        if (vehicle == null) {
+            rs.setStatuscode(HttpStatus.NOT_FOUND.value());
+            rs.setMessage("Vehicle not found for this driver");
+            rs.setData(null);
+            return rs;
+        }
+
+        double lat = dto.getLatitude();
+        double lon = dto.getLongitude();
+
+        // Call LocationIQ API
+        String url = locationApiUrl + "?key=" + locationApiKey + "&lat=" + lat + "&lon=" + lon + "&format=json";
+
+        Map<String, Object> response = restTemplate.getForObject(url, Map.class);
+
+        Map<String, Object> address = (Map<String, Object>) response.get("address");
+        String city = (String) address.getOrDefault("city", 
+                        address.getOrDefault("town", 
+                        address.getOrDefault("village", "Unknown")));
+
+        vehicle.setCurrentcity(city);
+
+        vr.save(vehicle);
+
+        rs.setStatuscode(HttpStatus.OK.value());
+        rs.setMessage("Current city updated successfully");
+        rs.setData(vehicle);
+
+        return rs;
+    }
+}
+
+    
+

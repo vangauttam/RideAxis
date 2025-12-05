@@ -5,11 +5,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 @Entity
+@Table(name = "vehicles")
 public class Vehicle {
 	@Id
-	private int id;
-	private String name;
+	private Long vehicleid;
+	private String vname;
 	private String vehicleno;
 	private String type;
 	private String model;
@@ -17,21 +19,35 @@ public class Vehicle {
 	private String currentcity;
 	private String availableStatus;
 	private double priceperkm;
+	private double latitude;
+	private double longitude;
+	public double getLatitude() {
+		return latitude;
+	}
+	public void setLatitude(double latitude) {
+		this.latitude = latitude;
+	}
+	public double getLongitude() {
+		return longitude;
+	}
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
+	}
 	@OneToOne
 	@MapsId
-	@JoinColumn(name="id")
+	@JoinColumn(name="vehicleid")
 	private Driver driver;
-	public int getId() {
-		return id;
+	public Long getVehicleid() {
+		return vehicleid;
 	}
-	public void setId(int id) {
-		this.id = id;
+	public void setVehicleid(Long vehicleid) {
+		this.vehicleid = vehicleid;
 	}
-	public String getName() {
-		return name;
+	public String getVname() {
+		return vname;
 	}
-	public void setName(String name) {
-		this.name = name;
+	public void setVname(String vname) {
+		this.vname = vname;
 	}
 	public String getVehicleno() {
 		return vehicleno;
@@ -81,17 +97,13 @@ public class Vehicle {
 	public void setDriver(Driver driver) {
 		this.driver = driver;
 	}
-	@Override
-	public String toString() {
-		return "Vehicle [id=" + id + ", name=" + name + ", vehicleno=" + vehicleno + ", type=" + type + ", model="
-				+ model + ", capacity=" + capacity + ", currentcity=" + currentcity + ", availableStatus="
-				+ availableStatus + ", priceperkm=" + priceperkm + ", driver=" + driver + "]";
-	}
-	public Vehicle(int id, String name, String vehicleno, String type, String model, int capacity, String currentcity,
-			String availableStatus, double priceperkm, Driver driver) {
+	
+	public Vehicle(Long vehicleid, String vname, String vehicleno, String type, String model, int capacity,
+			String currentcity, String availableStatus, double priceperkm, double latitude, double longitude,
+			Driver driver) {
 		super();
-		this.id = id;
-		this.name = name;
+		this.vehicleid = vehicleid;
+		this.vname = vname;
 		this.vehicleno = vehicleno;
 		this.type = type;
 		this.model = model;
@@ -99,11 +111,23 @@ public class Vehicle {
 		this.currentcity = currentcity;
 		this.availableStatus = availableStatus;
 		this.priceperkm = priceperkm;
+		this.latitude = latitude;
+		this.longitude = longitude;
 		this.driver = driver;
 	}
+	
 	public Vehicle() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	@Override
+	public String toString() {
+		return "Vehicle [vehicleid=" + vehicleid + ", vname=" + vname + ", vehicleno=" + vehicleno + ", type=" + type
+				+ ", model=" + model + ", capacity=" + capacity + ", currentcity=" + currentcity + ", availableStatus="
+				+ availableStatus + ", priceperkm=" + priceperkm + ", latitude=" + latitude + ", longitude=" + longitude
+				+ ", driver=" + driver + "]";
+	}
+	
+	
 
 }

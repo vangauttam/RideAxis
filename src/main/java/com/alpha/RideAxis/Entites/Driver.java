@@ -6,14 +6,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 @Entity
+@Table(name = "drivers")
 public class Driver {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	private Long driverid;
 	private String licenceno;
 	private String upiid;
-	private String name;
+	private String dname;
 	private String status;
 	private int age;
 	private long mobileno;
@@ -21,11 +23,11 @@ public class Driver {
 	private String mailid;
 	@OneToOne(mappedBy = "driver",cascade = CascadeType.ALL)
 	private Vehicle vehicle;
-	public int getId() {
-		return id;
+	public Long getDriverid() {
+		return driverid;
 	}
-	public void setId(int id) {
-		this.id = id;
+	public void setDriverid(Long driverid) {
+		this.driverid = driverid;
 	}
 	public String getLicenceno() {
 		return licenceno;
@@ -39,11 +41,11 @@ public class Driver {
 	public void setUpiid(String upiid) {
 		this.upiid = upiid;
 	}
-	public String getName() {
-		return name;
+	public String getDname() {
+		return dname;
 	}
-	public void setName(String name) {
-		this.name = name;
+	public void setDname(String dname) {
+		this.dname = dname;
 	}
 	public String getStatus() {
 		return status;
@@ -83,17 +85,17 @@ public class Driver {
 	}
 	@Override
 	public String toString() {
-		return "Driver [id=" + id + ", licenceno=" + licenceno + ", upiid=" + upiid + ", name=" + name + ", status="
+		return "Driver [driverid=" + driverid + ", licenceno=" + licenceno + ", upiid=" + upiid + ", dname=" + dname + ", status="
 				+ status + ", age=" + age + ", mobileno=" + mobileno + ", gender=" + gender + ", mailid=" + mailid
 				+ ", vehicle=" + vehicle + "]";
 	}
-	public Driver(int id, String licenceno, String upiid, String name, String status, int age, long mobileno,
+	public Driver(Long driverid, String licenceno, String upiid, String dname, String status, int age, long mobileno,
 			String gender, String mailid, Vehicle vehicle) {
 		super();
-		this.id = id;
+		this.driverid = driverid;
 		this.licenceno = licenceno;
 		this.upiid = upiid;
-		this.name = name;
+		this.dname = dname;
 		this.status = status;
 		this.age = age;
 		this.mobileno = mobileno;
