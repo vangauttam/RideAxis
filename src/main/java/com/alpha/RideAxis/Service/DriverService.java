@@ -40,12 +40,15 @@ public class DriverService {
         driver.setMailid(dto.getMailid());
 
         Vehicle vehicle = new Vehicle();
-        vehicle.setVname(dto.getV_name());
+        vehicle.setVname(dto.getVname());
         vehicle.setVehicleno(dto.getVehicleno());
         vehicle.setType(dto.getType());
         vehicle.setModel(dto.getModel());
         vehicle.setCapacity(dto.getCapacity());
         vehicle.setPriceperkm(dto.getPriceperkm()); 
+        vehicle.setLatitude(dto.getLatitude());
+        vehicle.setLongitude(dto.getLongitude());
+
         
         
         driver.setVehicle(vehicle);
@@ -103,7 +106,8 @@ public class DriverService {
                         address.getOrDefault("village", "Unknown")));
 
         vehicle.setCurrentcity(city);
-
+        vehicle.setLatitude(lat);       
+        vehicle.setLongitude(lon); 
         vr.save(vehicle);
 
         rs.setStatuscode(HttpStatus.OK.value());
