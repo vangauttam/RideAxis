@@ -1,5 +1,7 @@
 package com.alpha.RideAxis.Entites;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -36,6 +38,7 @@ public class Vehicle {
 	@OneToOne
 	@MapsId
 	@JoinColumn(name="vehicleid")
+	@JsonIgnore
 	private Driver driver;
 	public Long getVehicleid() {
 		return vehicleid;
