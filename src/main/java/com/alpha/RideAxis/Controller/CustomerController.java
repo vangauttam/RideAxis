@@ -3,6 +3,7 @@ package com.alpha.RideAxis.Controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,23 +39,9 @@ public class CustomerController {
                 .status(response.getStatuscode())
                 .body(response);
     }
-    @GetMapping("/findcustomer")
-    public ResponseEntity<ResponseStructure<Customer>> findCustomer(
-            @RequestParam long mobno) {
+   
+    
 
-        ResponseStructure<Customer> response = cs.findCustomerByMobile(mobno);
-
-        return ResponseEntity
-                .status(response.getStatuscode())
-                .body(response);
-    }
-//    @GetMapping("/seeAllAvailableVehicles")
-//    public ResponseEntity<List<Vehicle>> seeAll(@RequestParam long mobno) {
-//
-//        List<Vehicle> vehicles = cs.seeAllAvailableVehicles(mobno);
-//
-//        return ResponseEntity.ok(vehicles);
-//    }
 
 
 }

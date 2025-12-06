@@ -9,7 +9,7 @@ import com.alpha.RideAxis.Entites.Vehicle;
 
 @Repository
 public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
-	 List<Vehicle> findByAvailableStatus(String availableStatus);
+	 List<Vehicle> findByAvailableStatus(String availableStatus, String string);
 
 }
 

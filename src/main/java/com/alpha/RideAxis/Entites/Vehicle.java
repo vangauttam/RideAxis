@@ -23,19 +23,7 @@ public class Vehicle {
 	private double priceperkm;
 	private double latitude;
 	private double longitude;
-
-	public double getLatitude() {
-		return latitude;
-	}
-	public void setLatitude(double latitude) {
-		this.latitude = latitude;
-	}
-	public double getLongitude() {
-		return longitude;
-	}
-	public void setLongitude(double longitude) {
-		this.longitude = longitude;
-	}
+	private double averagespeed;
 	@OneToOne
 	@MapsId
 	@JoinColumn(name="vehicleid")
@@ -95,16 +83,40 @@ public class Vehicle {
 	public void setPriceperkm(double priceperkm) {
 		this.priceperkm = priceperkm;
 	}
+	public double getLatitude() {
+		return latitude;
+	}
+	public void setLatitude(double latitude) {
+		this.latitude = latitude;
+	}
+	public double getLongitude() {
+		return longitude;
+	}
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
+	}
+	public double getAveragespeed() {
+		return averagespeed;
+	}
+	public void setAveragespeed(double averagespeed) {
+		this.averagespeed = averagespeed;
+	}
 	public Driver getDriver() {
 		return driver;
 	}
 	public void setDriver(Driver driver) {
 		this.driver = driver;
 	}
-	
+	@Override
+	public String toString() {
+		return "Vehicle [vehicleid=" + vehicleid + ", vname=" + vname + ", vehicleno=" + vehicleno + ", type=" + type
+				+ ", model=" + model + ", capacity=" + capacity + ", currentcity=" + currentcity + ", availableStatus="
+				+ availableStatus + ", priceperkm=" + priceperkm + ", latitude=" + latitude + ", longitude=" + longitude
+				+ ", averagespeed=" + averagespeed + ", driver=" + driver + "]";
+	}
 	public Vehicle(Long vehicleid, String vname, String vehicleno, String type, String model, int capacity,
 			String currentcity, String availableStatus, double priceperkm, double latitude, double longitude,
-			Driver driver) {
+			double averagespeed, Driver driver) {
 		super();
 		this.vehicleid = vehicleid;
 		this.vname = vname;
@@ -117,21 +129,11 @@ public class Vehicle {
 		this.priceperkm = priceperkm;
 		this.latitude = latitude;
 		this.longitude = longitude;
+		this.averagespeed = averagespeed;
 		this.driver = driver;
 	}
-	
 	public Vehicle() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	@Override
-	public String toString() {
-		return "Vehicle [vehicleid=" + vehicleid + ", vname=" + vname + ", vehicleno=" + vehicleno + ", type=" + type
-				+ ", model=" + model + ", capacity=" + capacity + ", currentcity=" + currentcity + ", availableStatus="
-				+ availableStatus + ", priceperkm=" + priceperkm + ", latitude=" + latitude + ", longitude=" + longitude
-				+ ", driver=" + driver + "]";
-	}
-	
-	
-
 }

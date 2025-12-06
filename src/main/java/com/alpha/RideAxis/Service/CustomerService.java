@@ -1,7 +1,7 @@
 package com.alpha.RideAxis.Service;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,7 +11,6 @@ import org.springframework.web.client.RestTemplate;
 
 import com.alpha.RideAxis.DTO.RegCustomerDto;
 import com.alpha.RideAxis.Entites.Customer;
-import com.alpha.RideAxis.Entites.Vehicle;
 import com.alpha.RideAxis.Repository.CustomerRepository;
 import com.alpha.RideAxis.Repository.VehicleRepository;
 
@@ -119,14 +118,16 @@ public class CustomerService {
 
         ResponseStructure<Customer> rs = new ResponseStructure<>();
 
-        Customer customer = cr.findByMobileno(mobno);
+        Optional<Customer> optional = cr.findByMobileno(mobno);
 
-        if (customer == null) {
+        if (optional.isEmpty()) {
             rs.setStatuscode(HttpStatus.NOT_FOUND.value());
             rs.setMessage("Customer not found with mobile number: " + mobno);
             rs.setData(null);
             return rs;
         }
+
+        Customer customer = optional.get();
 
         rs.setStatuscode(HttpStatus.OK.value());
         rs.setMessage("Customer found");
@@ -134,25 +135,6 @@ public class CustomerService {
 
         return rs;
     }
-//    public List<Vehicle> seeAllAvailableVehicles(long mobno) {
-//
-//        Customer customer = cr.findByMobileno(mobno);
-//
-//        if (customer == null) {
-//            throw new RuntimeException("Customer not found with mobile number: " + mobno);
-//        }
-//
-//        String customerCity = customer.getCurrentloc();  // ⭐ customer location stored as string
-//
-//        // Fetch all AVAILABLE vehicles
-//        List<Vehicle> allAvailable = vr.findByAvailableStatus("AVAILABLE");
-//
-//        // Filter vehicles that match the customer city
-//        List<Vehicle> filtered = allAvailable.stream()
-//                .filter(v -> v.getCurrentcity() != null &&
-//                             v.getCurrentcity().equalsIgnoreCase(customerCity))
-//                .toList();
-//
-//        return filtered;
+ 
     }
 
