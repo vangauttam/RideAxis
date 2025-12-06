@@ -39,9 +39,11 @@ public class CustomerController {
                 .status(response.getStatuscode())
                 .body(response);
     }
-   
-    
+  
+        @GetMapping("/findcustomer")
+        public ResponseStructure<Customer> findCustomerByMobile(
+                @RequestParam("mobno") long mobno) {
 
-
-
-}
+            return cs.findCustomerByMobile(mobno);
+        }
+    }
