@@ -23,6 +23,7 @@ public class Vehicle {
 	private double priceperkm;
 	private double latitude;
 	private double longitude;
+
 	public double getLatitude() {
 		return latitude;
 	}
