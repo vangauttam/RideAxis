@@ -11,8 +11,10 @@ import org.springframework.web.client.RestTemplate;
 import com.alpha.RideAxis.DTO.RegDriverVehicleDTO;
 import com.alpha.RideAxis.DTO.CurrentLocationDTO;
 import com.alpha.RideAxis.Entites.Driver;
+import com.alpha.RideAxis.Entites.FetchLocation;
 import com.alpha.RideAxis.Entites.Vehicle;
 import com.alpha.RideAxis.Repository.DriverRepository;
+import com.alpha.RideAxis.Repository.FetchLocationRepository;
 import com.alpha.RideAxis.Repository.VehicleRepository;
 import com.alpha.RideAxis.ResponseStructure;
 
@@ -24,6 +26,9 @@ public class DriverService {
 
     @Autowired
     private VehicleRepository vr;
+    
+    @Autowired
+    private FetchLocationRepository flr;
     
     @Autowired
     private RestTemplate restTemplate; 
@@ -95,19 +100,46 @@ public class DriverService {
         double lat = dto.getLatitude();
         double lon = dto.getLongitude();
 
-        // Call LocationIQ API
-        String url = locationApiUrl + "?key=" + locationApiKey + "&lat=" + lat + "&lon=" + lon + "&format=json";
+        String city;
 
-        Map<String, Object> response = restTemplate.getForObject(url, Map.class);
+        //check table
+        FetchLocation cachedLocation =flr.findByLatAndLon(lat, lon);
 
-        Map<String, Object> address = (Map<String, Object>) response.get("address");
-        String city = (String) address.getOrDefault("city", 
-                        address.getOrDefault("town", 
-                        address.getOrDefault("village", "Unknown")));
+        if (cachedLocation != null) {
 
+            // ✔ Use cached city (NO API CALL)
+            city = cachedLocation.getCity();
+
+        } else {
+
+           //API calling
+            String url = locationApiUrl + "?key=" + locationApiKey + "&lat=" + lat + "&lon=" + lon + "&format=json";
+
+            Map<String, Object> response = restTemplate.getForObject(url, Map.class);
+            Map<String, Object> address = (Map<String, Object>) response.get("address");
+
+            city = (String) address.getOrDefault(
+                    "city",
+                    address.getOrDefault(
+                            "town",
+                            address.getOrDefault("village", "Unknown")
+                    )
+            );
+
+            
+            FetchLocation fl = new FetchLocation();
+            fl.setLat(lat);
+            fl.setLon(lon);
+
+            fl.setCity(city);
+
+            flr.save(fl);  // save new cache entry
+        }
+
+        
         vehicle.setCurrentcity(city);
-        vehicle.setLatitude(lat);       
-        vehicle.setLongitude(lon); 
+        vehicle.setLatitude(lat);
+        vehicle.setLongitude(lon);
         vr.save(vehicle);
 
         rs.setStatuscode(HttpStatus.OK.value());
@@ -116,6 +148,7 @@ public class DriverService {
 
         return rs;
     }
+
     // 👉 FIND DRIVER BY MOBILE NUMBER
     public ResponseStructure<Driver> findDriverByMobile(long mobno) {
 
