@@ -16,6 +16,7 @@ public class RegDriverVehicleDTO {
 	private double latitude;
 	private double longitude;
 	private double priceperkm;
+	private double averagespeed;
 	public String getLicenceno() {
 		return licenceno;
 	}
@@ -106,9 +107,23 @@ public class RegDriverVehicleDTO {
 	public void setPriceperkm(double priceperkm) {
 		this.priceperkm = priceperkm;
 	}
+	public double getAveragespeed() {
+		return averagespeed;
+	}
+	public void setAveragespeed(double averagespeed) {
+		this.averagespeed = averagespeed;
+	}
+	@Override
+	public String toString() {
+		return "RegDriverVehicleDTO [licenceno=" + licenceno + ", upiid=" + upiid + ", dname=" + dname + ", age=" + age
+				+ ", mobileno=" + mobileno + ", gender=" + gender + ", mailid=" + mailid + ", vname=" + vname
+				+ ", vehicleno=" + vehicleno + ", type=" + type + ", model=" + model + ", capacity=" + capacity
+				+ ", latitude=" + latitude + ", longitude=" + longitude + ", priceperkm=" + priceperkm
+				+ ", averagespeed=" + averagespeed + "]";
+	}
 	public RegDriverVehicleDTO(String licenceno, String upiid, String dname, int age, long mobileno, String gender,
 			String mailid, String vname, String vehicleno, String type, String model, int capacity, double latitude,
-			double longitude, double priceperkm) {
+			double longitude, double priceperkm, double averagespeed) {
 		super();
 		this.licenceno = licenceno;
 		this.upiid = upiid;
@@ -125,16 +140,11 @@ public class RegDriverVehicleDTO {
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.priceperkm = priceperkm;
+		this.averagespeed = averagespeed;
 	}
 	public RegDriverVehicleDTO() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	@Override
-	public String toString() {
-		return "RegDriverVehicleDTO [licenceno=" + licenceno + ", upiid=" + upiid + ", dname=" + dname + ", age=" + age
-				+ ", mobileno=" + mobileno + ", gender=" + gender + ", mailid=" + mailid + ", vname=" + vname
-				+ ", vehicleno=" + vehicleno + ", type=" + type + ", model=" + model + ", capacity=" + capacity
-				+ ", latitude=" + latitude + ", longitude=" + longitude + ", priceperkm=" + priceperkm + "]";
-	}
+	
 }
