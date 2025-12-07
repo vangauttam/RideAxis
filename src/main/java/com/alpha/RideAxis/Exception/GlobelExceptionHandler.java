@@ -28,4 +28,16 @@ public class GlobelExceptionHandler {
         response.put("data", null);
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
+    
+    @ExceptionHandler(InvalidDestinationLocationException.class)
+    public ResponseEntity<?> handleInvalidDestination(InvalidDestinationLocationException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("statuscode", 400);  // BAD REQUEST
+        response.put("message", ex.getMessage());
+        response.put("data", null);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    
+    
 }
