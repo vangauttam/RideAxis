@@ -1,5 +1,7 @@
 package com.alpha.RideAxis.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -9,12 +11,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.alpha.RideAxis.DTO.AvailableVehicleDTO;
 import com.alpha.RideAxis.DTO.RegCustomerDto;
+import com.alpha.RideAxis.DTO.VehicleDetailDTO;
 import com.alpha.RideAxis.Entites.Customer;
+import com.alpha.RideAxis.Entites.GeoCoordinates;
+import com.alpha.RideAxis.Entites.Vehicle;
+import com.alpha.RideAxis.Exception.CustomerNotFoundException;
+import com.alpha.RideAxis.Exception.InvalidDestinationLocationException;
 import com.alpha.RideAxis.Repository.CustomerRepository;
 import com.alpha.RideAxis.Repository.VehicleRepository;
 
 import jakarta.transaction.Transactional;
+
 
 import com.alpha.RideAxis.ResponseStructure;
 
@@ -34,7 +43,17 @@ public class CustomerService {
 
     @Value("${locationiq.api.format}")
     private String format;
+    
+    
 
+    @Value("${locationiq.api.search}")   // Use search endpoint for validation
+    private String searchApiUrl;
+
+    @Autowired
+    private GeoLocationService geoService; // External service for distance/time calculation
+    
+    
+    
     public ResponseStructure<Customer> registerCustomer(RegCustomerDto dto) {
 
         Customer customer = new Customer();
@@ -58,6 +77,8 @@ public class CustomerService {
 
         return rs;
     }
+    
+    
 
 
   
@@ -135,6 +156,65 @@ public class CustomerService {
 
         return rs;
     }
+    
+    
+    
+   
+
+    public ResponseStructure<AvailableVehicleDTO> seeallAvailableVehicles(long mobileNumber, String destination) {
+
+        ResponseStructure<AvailableVehicleDTO> rs = new ResponseStructure<>();
+
+        // Step 1: Validate Destination Location
+        GeoCoordinates destCoords = geoService.getCoordinates(destination);
+        if (destCoords == null)
+            throw new InvalidDestinationLocationException("Invalid destination: " + destination);
+
+        // Step 2: Get Customer
+        Customer customer = cr.findByMobileno(mobileNumber)
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found"));
+
+        GeoCoordinates sourceCoords =new GeoCoordinates(customer.getLatitude(), customer.getLongitude());
+
+        // Step 3: Distance + Time
+        double distance = geoService.calculateDistance(sourceCoords, destCoords);
+        double estimatedTime = geoService.getEstimatedTime(sourceCoords, destCoords);
+
+        // Step 4: Get all Available Vehicles in customer current location
+        List<Vehicle> vehicles =
+                vr.findByAvailableStatus("Available", customer.getCurrentloc());
+
+        List<VehicleDetailDTO> vehicleList = new ArrayList<>();
+
+        for (Vehicle v : vehicles) {
+
+            double fare = v.getPriceperkm() * distance;
+            double time = distance / v.getAveragespeed();
+
+            VehicleDetailDTO detail = new VehicleDetailDTO();
+            detail.setVehicle(v);
+            detail.setFare(fare);
+            detail.setEstimatedtime(time);
+
+            vehicleList.add(detail);
+        }
+
+        // Step 5: Prepare response DTO
+        AvailableVehicleDTO dto = new AvailableVehicleDTO();
+        dto.setCustomer(customer);
+        dto.setDistance(distance);
+        dto.setSource(customer.getCurrentloc());
+        dto.setDestinaton(destination);
+        dto.setAvailableVehicles(vehicleList);
+
+        // Step 6: Return Response
+        rs.setStatuscode(HttpStatus.OK.value());
+        rs.setMessage("Available Vehicles Fetched Successfully");
+        rs.setData(dto);
+
+        return rs;
+    }
+
  
     }
 
