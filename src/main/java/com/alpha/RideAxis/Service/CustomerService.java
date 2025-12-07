@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.alpha.RideAxis.DTO.AvailableVehicleDTO;
 import com.alpha.RideAxis.DTO.RegCustomerDto;
 import com.alpha.RideAxis.Entites.Customer;
 import com.alpha.RideAxis.Repository.CustomerRepository;
@@ -135,6 +136,8 @@ public class CustomerService {
 
         return rs;
     }
+ 
+
  
     }
 

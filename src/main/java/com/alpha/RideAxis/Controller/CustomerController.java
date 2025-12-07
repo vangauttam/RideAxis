@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.alpha.RideAxis.DTO.AvailableVehicleDTO;
 import com.alpha.RideAxis.DTO.RegCustomerDto;
 import com.alpha.RideAxis.Entites.Customer;
 import com.alpha.RideAxis.Entites.Vehicle;
@@ -46,4 +47,6 @@ public class CustomerController {
 
             return cs.findCustomerByMobile(mobno);
         }
+    
+       
     }
