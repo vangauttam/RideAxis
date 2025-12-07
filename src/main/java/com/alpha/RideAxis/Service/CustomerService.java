@@ -166,27 +166,84 @@ public class CustomerService {
 
         ResponseStructure<AvailableVehicleDTO> rs = new ResponseStructure<>();
 
-     
+        Customer cust = cr.findByMobileno(mobileNumber)
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found"));
+        
         GeoCordinates destCoords = geoService.getCordinates(destination);
         if (destCoords == null)
             throw new InvalidDestinationLocationException("Invalid destination: " + destination);
 
-        // Create DTO for Step 1 only
-        AvailableVehicleDTO dto = new AvailableVehicleDTO();
-        dto.setSource("Customer Current Location");
-        dto.setDestinaton(destination);
+        GeoCordinates sourceCoords = geoService.getCordinates(cust.getCurrentloc());
 
-        // You are only validating destination at this step
-        dto.setDistance(0.0); // will fill in next steps
-        dto.setAvailableVehicles(null); // will fill in next steps
+        double distance = geoService.calculateDistance(
+                geoService.getCordinates(cust.getCurrentloc()).getLatitude(),
+                geoService.getCordinates(cust.getCurrentloc()).getLongitude(),
+                destCoords.getLatitude(),
+                destCoords.getLongitude()
+        );
+
+        // 5) Get Nearby Vehicles
+        List<Vehicle> vehicles = getVehiclesNearCustomer(cust.getCurrentloc());
+
+        // 6) Convert to DTO with fare + time
+        List<VehicleDetailDTO> dtolist = mapVehicleDetails(vehicles, distance);
+
+        // 7) Build Response DTO
+        AvailableVehicleDTO dto = new AvailableVehicleDTO();
+        dto.setCustomer(cust);
+        dto.setSource(cust.getCurrentloc());
+        dto.setDestinaton(destination);
+        dto.setDistance(distance);
+        dto.setAvailableVehicles(dtolist);
 
         rs.setStatuscode(HttpStatus.OK.value());
-        rs.setMessage("Destination validated successfully");
+        rs.setMessage("Available vehicles fetched");
         rs.setData(dto);
 
-        return rs; 
-        
+       return rs; 
     }
+    private List<Vehicle> getVehiclesNearCustomer(String customerCity) {
+
+        List<Vehicle> allVehicles = vr.findAll();
+
+        List<Vehicle> nearby = new ArrayList<>();
+
+        for (Vehicle v : allVehicles) {
+            if (v.getCurrentcity() != null 
+                    && v.getCurrentcity().equalsIgnoreCase(customerCity)) {
+
+                nearby.add(v);
+            }
+        }
+
+        return nearby;
+    }
+    private List<VehicleDetailDTO> mapVehicleDetails(List<Vehicle> vehicles, double distance) {
+
+        List<VehicleDetailDTO> list = new ArrayList<>();
+
+        for (Vehicle v : vehicles) {
+
+            VehicleDetailDTO vd = new VehicleDetailDTO();
+
+            vd.setVehicle(v);
+
+            // Calculate fare based on user's price per km
+            double fare = v.getPriceperkm() * distance;
+            vd.setFare(fare);
+
+            // Calculate estimated time based on user's average speed
+            // time = distance / speed (in hours) → convert to minutes
+            double estimatedTime = (distance / v.getAveragespeed()) * 60;
+            vd.setEstimatedtime(estimatedTime);
+
+            list.add(vd);
+        }
+
+        return list;
+    }
+
+
 
  
     }
