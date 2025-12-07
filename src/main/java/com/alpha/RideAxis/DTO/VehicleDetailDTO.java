@@ -3,40 +3,43 @@ package com.alpha.RideAxis.DTO;
 import com.alpha.RideAxis.Entites.Vehicle;
 
 public class VehicleDetailDTO {
-	private Vehicle v;
-	private int fare;
-	private int estimatedtime;
-	public Vehicle getV() {
-		return v;
+	private Vehicle vehicle;
+	private double fare;
+	private double estimatedtime;
+	public Vehicle getVehicle() {
+		return vehicle;
 	}
-	public void setV(Vehicle v) {
-		this.v = v;
+	public void setVehicle(Vehicle vehicle) {
+		this.vehicle = vehicle;
 	}
-	public int getFare() {
+	public double getFare() {
 		return fare;
 	}
-	public void setFare(int fare) {
+	public void setFare(double fare) {
 		this.fare = fare;
 	}
-	public int getEstimatedtime() {
+	public double getEstimatedtime() {
 		return estimatedtime;
 	}
-	public void setEstimatedtime(int estimatedtime) {
+	public void setEstimatedtime(double estimatedtime) {
 		this.estimatedtime = estimatedtime;
 	}
 	@Override
 	public String toString() {
-		return "VehicleDetailDTO [v=" + v + ", fare=" + fare + ", estimatedtime=" + estimatedtime + "]";
+		return "VehicleDetailDTO [vehicle=" + vehicle + ", fare=" + fare + ", estimatedtime=" + estimatedtime + "]";
 	}
-	public VehicleDetailDTO(Vehicle v, int fare, int estimatedtime) {
+	public VehicleDetailDTO(Vehicle vehicle, double fare, double estimatedtime) {
 		super();
-		this.v = v;
+		this.vehicle = vehicle;
 		this.fare = fare;
 		this.estimatedtime = estimatedtime;
 	}
 	public VehicleDetailDTO() {
 		super();
+		// TODO Auto-generated constructor stub
 	}
+
+	
 	
 	 
 
