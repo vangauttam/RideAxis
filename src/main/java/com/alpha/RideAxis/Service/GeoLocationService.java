@@ -1,6 +1,7 @@
 package com.alpha.RideAxis.Service;
 
-import com.alpha.RideAxis.Entites.GeoCoordinates;
+import com.alpha.RideAxis.Entites.GeoCordinates;
+import com.alpha.RideAxis.Entites.GeoCordinates;
 import com.alpha.RideAxis.Exception.InvalidDestinationLocationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -17,79 +18,36 @@ public class GeoLocationService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-
     // -----------------------------------------------------
-    // 1. Get Coordinates from Destination String (NO JACKSON)
+    // STEP 1: VALIDATE DESTINATION & RETURN LAT/LON
     // -----------------------------------------------------
-    public GeoCoordinates getCoordinates(String locationName) {
+    public GeoCordinates getCordinates(String destination) {
 
         try {
             String url = "https://us1.locationiq.com/v1/search"
                     + "?key=" + apiKey
-                    + "&q=" + locationName
+                    + "&q=" + destination
                     + "&format=json";
 
-            // API gives array → Map List
-            List<Map<String, Object>> jsonList = restTemplate.getForObject(
-                    url, List.class
-            );
+            // API returns a JSON array → Convert to List<Map>
+            List<Map<String, Object>> result = restTemplate.getForObject(url, List.class);
 
-            if (jsonList == null || jsonList.isEmpty()) {
-                throw new InvalidDestinationLocationException(
-                        "Invalid location: " + locationName
-                );
+            // Validate result
+            if (result == null || result.isEmpty()) {
+                throw new InvalidDestinationLocationException("Invalid destination: " + destination);
             }
 
-            Map<String, Object> obj = jsonList.get(0);
+            Map<String, Object> first = result.get(0);
 
-            double lat = Double.parseDouble(obj.get("lat").toString());
-            double lon = Double.parseDouble(obj.get("lon").toString());
+            double lat = Double.parseDouble(first.get("lat").toString());
+            double lon = Double.parseDouble(first.get("lon").toString());
 
-            return new GeoCoordinates(lat, lon);
+            return new GeoCordinates(lat, lon);
 
         } catch (Exception e) {
-            throw new InvalidDestinationLocationException(
-                    "Invalid Location: " + locationName
-            );
+            throw new InvalidDestinationLocationException("Invalid destination: " + destination);
         }
     }
-
-
-    // -----------------------------------------------------
-    // 2. Haversine Distance
-    // -----------------------------------------------------
-    public double calculateDistance(GeoCoordinates src, GeoCoordinates dest) {
-
-        final int R = 6371; // Earth radius
-
-        double lat1 = Math.toRadians(src.getLatitude());
-        double lon1 = Math.toRadians(src.getLongitude());
-        double lat2 = Math.toRadians(dest.getLatitude());
-        double lon2 = Math.toRadians(dest.getLongitude());
-
-        double diffLat = lat2 - lat1;
-        double diffLon = lon2 - lon1;
-
-        double a = Math.sin(diffLat / 2) * Math.sin(diffLat / 2)
-                + Math.cos(lat1) * Math.cos(lat2)
-                * Math.sin(diffLon / 2) * Math.sin(diffLon / 2);
-
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-        return R * c;
-    }
-
-
-    // -----------------------------------------------------
-    // 3. Estimated Time Calculation
-    // -----------------------------------------------------
-    public double getEstimatedTime(GeoCoordinates src, GeoCoordinates dest) {
-
-        double distance = calculateDistance(src, dest);
-
-        double averageSpeed = 50.0; // Default speed
-
-        return distance / averageSpeed;
-    }
-
+    
 }
+

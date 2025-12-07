@@ -1,13 +1,13 @@
 package com.alpha.RideAxis.Entites;
 
-public class GeoCoordinates {
+public class GeoCordinates {
 
     private double latitude;
     private double longitude;
 
-    public GeoCoordinates() {}
+    public GeoCordinates() {}
 
-    public GeoCoordinates(double latitude, double longitude) {
+    public GeoCordinates(double latitude, double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
     }
@@ -36,3 +36,4 @@ public class GeoCoordinates {
                 '}';
     }
 }
+
