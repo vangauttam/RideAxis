@@ -21,22 +21,20 @@ public class Booking {
     private Customer customer;
 
     @ManyToOne
-    @JoinColumn(name = "driver_id")
-    private Driver driver;
+    @JoinColumn(name = "vehicle_id")
+    private Vehicle vehicle;
 	private String sourcelocation;
 	private String destinationlocation;
 	private double distancetravlled;
 	private double fare;
 	private double estimatedtimerequired;
 	private LocalDate bookingdate;
+	private String paymentstatus;
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "payment_id")
 	private Payment payement;
 	public int getId() {
 		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
 	}
 	public Customer getCustomer() {
 		return customer;
@@ -44,11 +42,11 @@ public class Booking {
 	public void setCustomer(Customer customer) {
 		this.customer = customer;
 	}
-	public Driver getDriver() {
-		return driver;
+	public Vehicle getVehicle() {
+		return vehicle;
 	}
-	public void setDriver(Driver driver) {
-		this.driver = driver;
+	public void setVehicle(Vehicle vehicle) {
+		this.vehicle = vehicle;
 	}
 	public String getSourcelocation() {
 		return sourcelocation;
@@ -86,6 +84,12 @@ public class Booking {
 	public void setBookingdate(LocalDate bookingdate) {
 		this.bookingdate = bookingdate;
 	}
+	public String getPaymentstatus() {
+		return paymentstatus;
+	}
+	public void setPaymentstatus(String paymentstatus) {
+		this.paymentstatus = paymentstatus;
+	}
 	public Payment getPayement() {
 		return payement;
 	}
@@ -94,28 +98,29 @@ public class Booking {
 	}
 	@Override
 	public String toString() {
-		return "Booking [customer=" + customer + ", driver=" + driver + ", sourcelocation=" + sourcelocation
+		return "Booking [customer=" + customer + ", vehicle=" + vehicle + ", sourcelocation=" + sourcelocation
 				+ ", destinationlocation=" + destinationlocation + ", distancetravlled=" + distancetravlled + ", fare="
 				+ fare + ", estimatedtimerequired=" + estimatedtimerequired + ", bookingdate=" + bookingdate
-				+ ", payement=" + payement + "]";
+				+ ", paymentstatus=" + paymentstatus + ", payement=" + payement + "]";
 	}
-	public Booking(Customer customer, Driver driver, String sourcelocation, String destinationlocation,
+	public Booking(Customer customer, Vehicle vehicle, String sourcelocation, String destinationlocation,
 			double distancetravlled, double fare, double estimatedtimerequired, LocalDate bookingdate,
-			Payment payement) {
+			String paymentstatus, Payment payement) {
 		super();
 		this.customer = customer;
-		this.driver = driver;
+		this.vehicle = vehicle;
 		this.sourcelocation = sourcelocation;
 		this.destinationlocation = destinationlocation;
 		this.distancetravlled = distancetravlled;
 		this.fare = fare;
 		this.estimatedtimerequired = estimatedtimerequired;
 		this.bookingdate = bookingdate;
+		this.paymentstatus = paymentstatus;
 		this.payement = payement;
 	}
 	public Booking() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-
+	
 }
