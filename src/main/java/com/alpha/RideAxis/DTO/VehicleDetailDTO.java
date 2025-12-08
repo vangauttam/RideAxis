@@ -36,7 +36,6 @@ public class VehicleDetailDTO {
 	}
 	public VehicleDetailDTO() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	
