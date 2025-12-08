@@ -104,17 +104,17 @@ public class DriverService {
 
         String city;
 
-        //check table
+    
         FetchLocation cachedLocation =flr.findByLatAndLon(lat, lon);
 
         if (cachedLocation != null) {
 
-            // ✔ Use cached city (NO API CALL)
+           
             city = cachedLocation.getCity();
 
         } else {
 
-           //API calling
+           
             String url = locationApiUrl + "?key=" + locationApiKey + "&lat=" + lat + "&lon=" + lon + "&format=json";
 
             Map<String, Object> response = restTemplate.getForObject(url, Map.class);
@@ -135,7 +135,7 @@ public class DriverService {
 
             fl.setCity(city);
 
-            flr.save(fl);  // save new cache entry
+            flr.save(fl);  
         }
 
         
@@ -151,7 +151,7 @@ public class DriverService {
         return rs;
     }
 
-    // 👉 FIND DRIVER BY MOBILE NUMBER
+  
     public ResponseStructure<Driver> findDriverByMobile(long mobno) {
 
         Driver driver = dr.findByMobileno(mobno);
@@ -184,13 +184,13 @@ public class DriverService {
             return rs;
         }
 
-        // First delete vehicle associated with driver
+       
         Vehicle vehicle = driver.getVehicle();
         if (vehicle != null) {
             vr.delete(vehicle);
         }
 
-        // Delete driver
+        
         dr.delete(driver);
 
         rs.setStatuscode(200);

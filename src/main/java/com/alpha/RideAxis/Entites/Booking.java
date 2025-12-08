@@ -20,7 +20,6 @@ public class Booking {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    // MANY BOOKINGS → ONE DRIVER
     @ManyToOne
     @JoinColumn(name = "driver_id")
     private Driver driver;
