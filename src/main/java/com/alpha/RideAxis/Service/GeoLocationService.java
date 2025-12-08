@@ -33,6 +33,15 @@ public class GeoLocationService {
         }
 
         Map<String, Object> first = result.get(0);
+        Object latObj = first.get("lat");
+        Object lonObj = first.get("lon");
+
+        if (latObj == null || lonObj == null) {
+            throw new InvalidDestinationLocationException(
+                    "Invalid destination: " + destination + ". Coordinates missing."
+            );
+        }
+
 
         double lat = Double.parseDouble(first.get("lat").toString());
         double lon = Double.parseDouble(first.get("lon").toString());
