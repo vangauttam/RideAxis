@@ -53,6 +53,7 @@ public class DriverService {
         vehicle.setPriceperkm(dto.getPriceperkm()); 
         vehicle.setLatitude(dto.getLatitude());
         vehicle.setLongitude(dto.getLongitude());
+        vehicle.setAveragespeed(dto.getAveragespeed());
 
         
         

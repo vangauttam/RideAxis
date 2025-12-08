@@ -16,7 +16,6 @@ import com.alpha.RideAxis.DTO.RegCustomerDto;
 import com.alpha.RideAxis.DTO.VehicleDetailDTO;
 import com.alpha.RideAxis.Entites.Customer;
 import com.alpha.RideAxis.Entites.GeoCordinates;
-import com.alpha.RideAxis.Entites.GeoCordinates;
 import com.alpha.RideAxis.Entites.Vehicle;
 import com.alpha.RideAxis.Exception.CustomerNotFoundException;
 import com.alpha.RideAxis.Exception.InvalidDestinationLocationException;
@@ -24,8 +23,6 @@ import com.alpha.RideAxis.Repository.CustomerRepository;
 import com.alpha.RideAxis.Repository.VehicleRepository;
 
 import jakarta.transaction.Transactional;
-
-
 import com.alpha.RideAxis.ResponseStructure;
 
 @Service
@@ -45,15 +42,12 @@ public class CustomerService {
     @Value("${locationiq.api.format}")
     private String format;
     
-    
-
-    @Value("${locationiq.api.search}")   // Use search endpoint for validation
+    @Value("${locationiq.api.search}")
     private String searchApiUrl;
 
     @Autowired
-    private GeoLocationService geoService; // External service for distance/time calculation
-    
-    
+    private GeoLocationService geoService;
+
     
     public ResponseStructure<Customer> registerCustomer(RegCustomerDto dto) {
 
@@ -64,11 +58,10 @@ public class CustomerService {
         customer.setMobileno(dto.getMobileno());
         customer.setEmailid(dto.getEmail());
 
-        // 🔥 Get City Name Using API
+        // Get city from API
         String city = getCityFromCoordinates(dto.getLatitude(), dto.getLongitude());
         customer.setCurrentloc(city);
 
-        // Save to DB
         customer = cr.save(customer);
 
         ResponseStructure<Customer> rs = new ResponseStructure<>();
@@ -80,9 +73,7 @@ public class CustomerService {
     }
     
     
-
-
-  
+    
     private String getCityFromCoordinates(String lat, String lon) {
 
         RestTemplate restTemplate = new RestTemplate();
@@ -93,29 +84,27 @@ public class CustomerService {
                      "&lon=" + lon +
                      "&format=" + format;
 
-        try {
-            Map<String, Object> response = restTemplate.getForObject(url, Map.class);
+        Map<String, Object> response = restTemplate.getForObject(url, Map.class);
 
-            Map<String, Object> address = (Map<String, Object>) response.get("address");
+        Map<String, Object> address = (Map<String, Object>) response.get("address");
 
-            if (address.get("city") != null)
-                return address.get("city").toString();
+        if (address.get("city") != null)
+            return address.get("city").toString();
 
-            if (address.get("town") != null)
-                return address.get("town").toString();
+        if (address.get("town") != null)
+            return address.get("town").toString();
 
-            if (address.get("village") != null)
-                return address.get("village").toString();
+        if (address.get("village") != null)
+            return address.get("village").toString();
 
-            if (address.get("state") != null)
-                return address.get("state").toString();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        if (address.get("state") != null)
+            return address.get("state").toString();
 
         return "Unknown Location";
     }
+
+    
+    
     @Transactional
     public ResponseStructure<String> deleteCustomerByMobile(long mobno) {
 
@@ -136,6 +125,9 @@ public class CustomerService {
 
         return rs;
     }
+
+
+
     public ResponseStructure<Customer> findCustomerByMobile(long mobno) {
 
         ResponseStructure<Customer> rs = new ResponseStructure<>();
@@ -157,38 +149,36 @@ public class CustomerService {
 
         return rs;
     }
-    
-    
-    
-   
 
+    
+    
     public ResponseStructure<AvailableVehicleDTO> seeallAvailableVehicles(long mobileNumber, String destination) {
 
         ResponseStructure<AvailableVehicleDTO> rs = new ResponseStructure<>();
 
         Customer cust = cr.findByMobileno(mobileNumber)
-                .orElseThrow(() -> new CustomerNotFoundException("Customer not found"));
-        
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found with mobile: " + mobileNumber));
+
         GeoCordinates destCoords = geoService.getCordinates(destination);
         if (destCoords == null)
             throw new InvalidDestinationLocationException("Invalid destination: " + destination);
 
         GeoCordinates sourceCoords = geoService.getCordinates(cust.getCurrentloc());
 
+        if (sourceCoords == null)
+            throw new InvalidDestinationLocationException("Invalid customer source location: " + cust.getCurrentloc());
+
         double distance = geoService.calculateDistance(
-                geoService.getCordinates(cust.getCurrentloc()).getLatitude(),
-                geoService.getCordinates(cust.getCurrentloc()).getLongitude(),
+                sourceCoords.getLatitude(),
+                sourceCoords.getLongitude(),
                 destCoords.getLatitude(),
                 destCoords.getLongitude()
         );
 
-        // 5) Get Nearby Vehicles
         List<Vehicle> vehicles = getVehiclesNearCustomer(cust.getCurrentloc());
 
-        // 6) Convert to DTO with fare + time
         List<VehicleDetailDTO> dtolist = mapVehicleDetails(vehicles, distance);
 
-        // 7) Build Response DTO
         AvailableVehicleDTO dto = new AvailableVehicleDTO();
         dto.setCustomer(cust);
         dto.setSource(cust.getCurrentloc());
@@ -197,15 +187,17 @@ public class CustomerService {
         dto.setAvailableVehicles(dtolist);
 
         rs.setStatuscode(HttpStatus.OK.value());
-        rs.setMessage("Available vehicles fetched");
+        rs.setMessage("Available vehicles fetched successfully");
         rs.setData(dto);
 
-       return rs; 
+        return rs;
     }
+
+
+
     private List<Vehicle> getVehiclesNearCustomer(String customerCity) {
 
         List<Vehicle> allVehicles = vr.findAll();
-
         List<Vehicle> nearby = new ArrayList<>();
 
         for (Vehicle v : allVehicles) {
@@ -218,6 +210,9 @@ public class CustomerService {
 
         return nearby;
     }
+
+
+
     private List<VehicleDetailDTO> mapVehicleDetails(List<Vehicle> vehicles, double distance) {
 
         List<VehicleDetailDTO> list = new ArrayList<>();
@@ -228,12 +223,9 @@ public class CustomerService {
 
             vd.setVehicle(v);
 
-            // Calculate fare based on user's price per km
             double fare = v.getPriceperkm() * distance;
             vd.setFare(fare);
 
-            // Calculate estimated time based on user's average speed
-            // time = distance / speed (in hours) → convert to minutes
             double estimatedTime = (distance / v.getAveragespeed()) * 60;
             vd.setEstimatedtime(estimatedTime);
 
@@ -243,8 +235,4 @@ public class CustomerService {
         return list;
     }
 
-
-
- 
-    }
-
+}
