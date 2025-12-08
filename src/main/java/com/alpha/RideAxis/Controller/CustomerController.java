@@ -1,19 +1,15 @@
 package com.alpha.RideAxis.Controller;
 
-import java.util.List;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
+
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
-
 import com.alpha.RideAxis.DTO.AvailableVehicleDTO;
 import com.alpha.RideAxis.DTO.RegCustomerDto;
 import com.alpha.RideAxis.Entites.Customer;
-import com.alpha.RideAxis.Entites.Vehicle;
-import com.alpha.RideAxis.Exception.InvalidDestinationLocationException;
 import com.alpha.RideAxis.ResponseStructure;
 import com.alpha.RideAxis.Service.CustomerService;
 

@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
-public class GlobelExceptionHandler {
+public class GlobalExceptionHandler {
 
     @ExceptionHandler(VehicleNotFoundException.class)
     public ResponseEntity<?> handleVehicleNotFound(VehicleNotFoundException ex) {
