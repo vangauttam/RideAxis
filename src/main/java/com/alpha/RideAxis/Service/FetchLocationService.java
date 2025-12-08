@@ -15,7 +15,7 @@ public class FetchLocationService {
     @Autowired
     private FetchLocationRepository flr;
 
-    // SAVE LOCATION (Cache Insert)
+  
     public ResponseStructure<FetchLocation> saveLocation(FetchLocation fl) {
 
         ResponseStructure<FetchLocation> rs = new ResponseStructure<>();

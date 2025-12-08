@@ -164,7 +164,6 @@ public class CustomerService {
             throw new InvalidDestinationLocationException("Invalid destination: " + destination);
 
         GeoCordinates sourceCoords = geoService.getCordinates(cust.getCurrentloc());
-
         if (sourceCoords == null)
             throw new InvalidDestinationLocationException("Invalid customer source location: " + cust.getCurrentloc());
 
@@ -200,11 +199,11 @@ public class CustomerService {
         List<Vehicle> allVehicles = vr.findAll();
         List<Vehicle> nearby = new ArrayList<>();
 
-        for (Vehicle v : allVehicles) {
-            if (v.getCurrentcity() != null 
-                    && v.getCurrentcity().equalsIgnoreCase(customerCity)) {
+        for (Vehicle vehicle : allVehicles) {
+            if (vehicle.getCurrentcity() != null 
+                    && vehicle.getCurrentcity().equalsIgnoreCase(customerCity)) {
 
-                nearby.add(v);
+                nearby.add(vehicle);
             }
         }
 
@@ -217,19 +216,19 @@ public class CustomerService {
 
         List<VehicleDetailDTO> list = new ArrayList<>();
 
-        for (Vehicle v : vehicles) {
+        for (Vehicle vehicle : vehicles) {
 
-            VehicleDetailDTO vd = new VehicleDetailDTO();
+            VehicleDetailDTO vehicledetaildto = new VehicleDetailDTO();
 
-            vd.setVehicle(v);
+            vehicledetaildto.setVehicle(vehicle);
 
-            double fare = v.getPriceperkm() * distance;
-            vd.setFare(fare);
+            double fare = vehicle.getPriceperkm() * distance;
+            vehicledetaildto.setFare(fare);
 
-            double estimatedTime = (distance / v.getAveragespeed());
-            vd.setEstimatedtime(estimatedTime);
+            double estimatedTime = (distance / vehicle.getAveragespeed());
+            vehicledetaildto.setEstimatedtime(estimatedTime);
 
-            list.add(vd);
+            list.add(vehicledetaildto);
         }
 
         return list;

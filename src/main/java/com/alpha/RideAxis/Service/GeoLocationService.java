@@ -16,10 +16,7 @@ public class GeoLocationService {
     private String apiKey;
 
     private final RestTemplate restTemplate = new RestTemplate();
-
-    // -----------------------------------------------------
-    // STEP 1: VALIDATE DESTINATION & RETURN LAT/LON
-    // -----------------------------------------------------
+   
     public GeoCordinates getCordinates(String destination) {
 
         String url = "https://us1.locationiq.com/v1/search"
@@ -27,10 +24,10 @@ public class GeoLocationService {
                 + "&q=" + destination
                 + "&format=json";
 
-        // API returns a JSON array → Convert to List<Map>
+      
         List<Map<String, Object>> result = restTemplate.getForObject(url, List.class);
 
-        // Validate result
+      
         if (result == null || result.isEmpty()) {
             throw new InvalidDestinationLocationException("Invalid destination: " + destination);
         }
@@ -44,12 +41,10 @@ public class GeoLocationService {
     }
 
 
-    // -----------------------------------------------------
-    // STEP 3: Calculate distance between 2 coordinates
-    // -----------------------------------------------------
+   
     public double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
 
-        final int R = 6371; // Earth radius in KM
+        final int Radius = 6371; // Earth radius in KM
 
         double dLat = Math.toRadians(lat2 - lat1);
         double dLon = Math.toRadians(lon2 - lon1);
@@ -57,13 +52,13 @@ public class GeoLocationService {
         lat1 = Math.toRadians(lat1);
         lat2 = Math.toRadians(lat2);
 
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+        double haversine = Math.sin(dLat / 2) * Math.sin(dLat / 2)
                 + Math.sin(dLon / 2) * Math.sin(dLon / 2)
                 * Math.cos(lat1) * Math.cos(lat2);
 
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double angularDistance = 2 * Math.atan2(Math.sqrt(haversine), Math.sqrt(1 - haversine));
 
-        return R * c; // Distance in KM
+        return Radius * angularDistance; 
     }
 
 }
