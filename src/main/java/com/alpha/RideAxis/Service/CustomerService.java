@@ -179,16 +179,16 @@ public class CustomerService {
 
         List<VehicleDetailDTO> dtolist = mapVehicleDetails(vehicles, distance);
 
-        AvailableVehicleDTO dto = new AvailableVehicleDTO();
-        dto.setCustomer(cust);
-        dto.setSource(cust.getCurrentloc());
-        dto.setDestinaton(destination);
-        dto.setDistance(distance);
-        dto.setAvailableVehicles(dtolist);
+        AvailableVehicleDTO availablevehicledto = new AvailableVehicleDTO();
+        availablevehicledto.setCustomer(cust);
+        availablevehicledto.setSource(cust.getCurrentloc());
+        availablevehicledto.setDestinaton(destination);
+        availablevehicledto.setDistance(distance);
+        availablevehicledto.setAvailableVehicles(dtolist);
 
         rs.setStatuscode(HttpStatus.OK.value());
         rs.setMessage("Available vehicles fetched successfully");
-        rs.setData(dto);
+        rs.setData(availablevehicledto);
 
         return rs;
     }
