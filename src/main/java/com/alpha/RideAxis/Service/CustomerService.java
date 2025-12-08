@@ -226,7 +226,7 @@ public class CustomerService {
             double fare = v.getPriceperkm() * distance;
             vd.setFare(fare);
 
-            double estimatedTime = (distance / v.getAveragespeed()) * 60;
+            double estimatedTime = (distance / v.getAveragespeed());
             vd.setEstimatedtime(estimatedTime);
 
             list.add(vd);

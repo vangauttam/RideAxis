@@ -54,6 +54,7 @@ public class DriverService {
         vehicle.setLatitude(dto.getLatitude());
         vehicle.setLongitude(dto.getLongitude());
         vehicle.setAveragespeed(dto.getAveragespeed());
+        vehicle.setAvailableStatus("Available");
 
         
         
