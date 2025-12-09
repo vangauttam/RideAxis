@@ -29,10 +29,11 @@ public class Booking {
 	private double fare;
 	private double estimatedtimerequired;
 	private LocalDate bookingdate;
-	private String paymentstatus;
+	private String paymentstatus="not paid";
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "payment_id")
 	private Payment payement;
+	private String bookingstatus="pending";
 	public int getId() {
 		return id;
 	}
