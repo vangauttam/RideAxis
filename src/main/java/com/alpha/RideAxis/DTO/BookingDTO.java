@@ -5,8 +5,8 @@ import com.alpha.RideAxis.Entites.Vehicle;
 
 public class BookingDTO {
 
-
-    private Customer customer;
+	private Long vehicleId;
+	private Customer customer;
     private Vehicle vehicle;
     private String sourceLoc;
     private String destinationLoc;
@@ -57,9 +57,7 @@ public class BookingDTO {
 	}
 	@Override
 	public String toString() {
-		return "BookingDTO [customer=" + customer + ", vehicle=" + vehicle + ", sourceLoc=" + sourceLoc
-				+ ", destinationLoc=" + destinationLoc + ", fare=" + fare + ", distanceTravelled=" + distanceTravelled
-				+ ", estimatedTime=" + estimatedTime + "]";
+		return "BookingDTO [vehicleId=" + vehicleId + "]";
 	}
 	public BookingDTO(Customer customer, Vehicle vehicle, String sourceLoc, String destinationLoc, double fare,
 			double distanceTravelled, double estimatedTime) {
@@ -74,6 +72,17 @@ public class BookingDTO {
 	}
 	public BookingDTO() {
 		super();
+	}
+	public Long getVehicleId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	public void setVehicleId(Long vehicleId) {
+		this.vehicleId = vehicleId;
+	}
+	public BookingDTO(Long vehicleId) {
+		super();
+		this.vehicleId = vehicleId;
 	}
     
 }
