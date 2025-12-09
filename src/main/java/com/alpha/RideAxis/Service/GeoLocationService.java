@@ -19,32 +19,44 @@ public class GeoLocationService {
    
     public GeoCordinates getCordinates(String destination) {
 
-        String url = "https://us1.locationiq.com/v1/search"
-                + "?key=" + apiKey
-                + "&q=" + destination
-                + "&format=json";
+        String url = "https://api.openrouteservice.org/geocode/search"
+                + "?api_key=" + apiKey
+                + "&text=" + destination;
 
-      
-        List<Map<String, Object>> result = restTemplate.getForObject(url, List.class);
+        Map<String, Object> response = restTemplate.getForObject(url, Map.class);
 
-      
-        if (result == null || result.isEmpty()) {
+        List<Map<String, Object>> features = (List<Map<String, Object>>) response.get("features");
+
+        if (features == null || features.isEmpty()) {
             throw new InvalidDestinationLocationException("Invalid destination: " + destination);
         }
 
-        Map<String, Object> first = result.get(0);
-        Object latObj = first.get("lat");
-        Object lonObj = first.get("lon");
+        Map<String, Object> first = features.get(0);
+        Map<String, Object> props = (Map<String, Object>) first.get("properties");
 
-        if (latObj == null || lonObj == null) {
+        List<String> validTypes = List.of(
+                "locality", "neighbourhood", "city", "town", "village", "suburb", "region"
+        );
+
+        String type = props.get("type").toString().toLowerCase();
+
+        if (!validTypes.contains(type)) {
             throw new InvalidDestinationLocationException(
-                    "Invalid destination: " + destination + ". Coordinates missing."
+                    "Please enter a valid city/area name only"
             );
         }
 
+        String country = props.get("country").toString();
+        if (!country.equalsIgnoreCase("india")) {
+            throw new InvalidDestinationLocationException(
+                    "Location must be within India only"
+            );
+        }
+        Map<String, Object> geometry = (Map<String, Object>) first.get("geometry");
+        List<Object> coordinates = (List<Object>) geometry.get("coordinates");
 
-        double lat = Double.parseDouble(first.get("lat").toString());
-        double lon = Double.parseDouble(first.get("lon").toString());
+        double lon = Double.parseDouble(coordinates.get(0).toString());
+        double lat = Double.parseDouble(coordinates.get(1).toString());
 
         return new GeoCordinates(lat, lon);
     }
