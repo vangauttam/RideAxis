@@ -156,8 +156,7 @@ public class CustomerService {
 
         ResponseStructure<AvailableVehicleDTO> rs = new ResponseStructure<>();
 
-        Customer cust = cr.findByMobileno(mobno)
-                .orElseThrow(() -> new CustomerNotFoundException("Customer not found with mobile: " + mobno));
+        Customer cust = cr.findByMobileno(mobno).orElseThrow(() -> new CustomerNotFoundException("Customer not found with mobile: " + mobno));
 
         GeoCordinates destCoords = geoService.getCordinates(destination);
         if (destCoords == null)
