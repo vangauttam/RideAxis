@@ -152,12 +152,12 @@ public class CustomerService {
 
     
     
-    public ResponseStructure<AvailableVehicleDTO> seeallAvailableVehicles(long mobileNumber, String destination) {
+    public ResponseStructure<AvailableVehicleDTO> seeallAvailableVehicles(long mobno, String destination) {
 
         ResponseStructure<AvailableVehicleDTO> rs = new ResponseStructure<>();
 
-        Customer cust = cr.findByMobileno(mobileNumber)
-                .orElseThrow(() -> new CustomerNotFoundException("Customer not found with mobile: " + mobileNumber));
+        Customer cust = cr.findByMobileno(mobno)
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found with mobile: " + mobno));
 
         GeoCordinates destCoords = geoService.getCordinates(destination);
         if (destCoords == null)
