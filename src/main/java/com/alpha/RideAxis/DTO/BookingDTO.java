@@ -75,7 +75,7 @@ public class BookingDTO {
 	}
 	public Long getVehicleId() {
 		// TODO Auto-generated method stub
-		return null;
+		return vehicleId;
 	}
 	public void setVehicleId(Long vehicleId) {
 		this.vehicleId = vehicleId;

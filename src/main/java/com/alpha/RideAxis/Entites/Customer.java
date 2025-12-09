@@ -2,6 +2,8 @@ package com.alpha.RideAxis.Entites;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -19,6 +21,7 @@ public class Customer {
 	private long mobileno;
 	private String emailid;
 	private String currentloc;
+	@JsonIgnore
 	@OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
 	private List<Booking> bookinglist;
 	public int getId() {

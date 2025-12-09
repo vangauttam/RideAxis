@@ -2,6 +2,8 @@ package com.alpha.RideAxis.Entites;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,8 +32,10 @@ public class Booking {
 	private double estimatedtimerequired;
 	private LocalDate bookingdate;
 	private String paymentstatus="not paid";
+	
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "payment_id")
+	@JsonIgnore
 	private Payment payement;
 	private String bookingstatus="pending";
 	public int getId() {
