@@ -19,58 +19,52 @@ public class GeoLocationService {
    
     public GeoCordinates getCordinates(String destination) {
 
-        String url = "https://us1.locationiq.com/v1/search"
+        // 1. FORWARD GEOCODE
+        String forwardUrl = "https://us1.locationiq.com/v1/search"
                 + "?key=" + apiKey
                 + "&q=" + destination
                 + "&format=json";
 
-        List<Map<String, Object>> result = restTemplate.getForObject(url, List.class);
+        List<Map<String, Object>> result = restTemplate.getForObject(forwardUrl, List.class);
 
         if (result == null || result.isEmpty()) {
             throw new InvalidDestinationLocationException("Invalid destination: " + destination);
         }
 
         Map<String, Object> first = result.get(0);
+        double lat = Double.parseDouble(first.get("lat").toString());
+        double lon = Double.parseDouble(first.get("lon").toString());
 
-      
-        String placeClass = (first.get("class") != null) ? first.get("class").toString() : null;
-        String placeType  = (first.get("type") != null) ? first.get("type").toString() : null;
+        // 2. REVERSE GEOCODE (VALIDATE CITY)
+        String reverseUrl = "https://us1.locationiq.com/v1/reverse"
+                + "?key=" + apiKey
+                + "&lat=" + lat
+                + "&lon=" + lon
+                + "&format=json";
 
-      
-        List<String> allowedTypes = List.of(
-                "city", "town", "village", "hamlet", "suburb", "neighbourhood",
-                "locality", "county", "state", "region", "district"
-        );
+        Map<String, Object> reverse = restTemplate.getForObject(reverseUrl, Map.class);
 
-        List<String> allowedClasses = List.of(
-                "place", "boundary", "admin"
-        );
+        Map<String, Object> address = (Map<String, Object>) reverse.get("address");
 
-   
-        if (placeClass == null || placeType == null ||
-                !allowedClasses.contains(placeClass.toLowerCase()) ||
-                !allowedTypes.contains(placeType.toLowerCase())) {
+        if (address == null) {
+            throw new InvalidDestinationLocationException("Invalid destination: " + destination);
+        }
+
+        // Check if reverse geocode provides a valid city/state/town/village
+        if (address.get("city") == null &&
+            address.get("town") == null &&
+            address.get("village") == null &&
+            address.get("state") == null) {
 
             throw new InvalidDestinationLocationException(
-                    "Enter only city/area names, not random words: " + destination
+                    "Invalid destination: " + destination + ". No valid city information."
             );
         }
 
-      
-        Object latObj = first.get("lat");
-        Object lonObj = first.get("lon");
-
-        if (latObj == null || lonObj == null) {
-            throw new InvalidDestinationLocationException(
-                    "Invalid destination: " + destination + ". Coordinates missing."
-            );
-        }
-
-        double lat = Double.parseDouble(latObj.toString());
-        double lon = Double.parseDouble(lonObj.toString());
-
+        // Valid destination confirmed
         return new GeoCordinates(lat, lon);
     }
+
 
 
    
