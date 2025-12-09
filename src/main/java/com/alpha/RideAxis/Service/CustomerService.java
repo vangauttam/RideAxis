@@ -231,7 +231,7 @@ public class CustomerService {
             list.add(vehicledetaildto);
         }
 
-        return list;
+        return list; 
+        
     }
-
 }
