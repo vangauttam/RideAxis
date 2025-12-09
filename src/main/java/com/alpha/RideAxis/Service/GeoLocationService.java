@@ -19,44 +19,55 @@ public class GeoLocationService {
    
     public GeoCordinates getCordinates(String destination) {
 
-        String url = "https://api.openrouteservice.org/geocode/search"
-                + "?api_key=" + apiKey
-                + "&text=" + destination;
+        String url = "https://us1.locationiq.com/v1/search"
+                + "?key=" + apiKey
+                + "&q=" + destination
+                + "&format=json";
 
-        Map<String, Object> response = restTemplate.getForObject(url, Map.class);
+        List<Map<String, Object>> result = restTemplate.getForObject(url, List.class);
 
-        List<Map<String, Object>> features = (List<Map<String, Object>>) response.get("features");
-
-        if (features == null || features.isEmpty()) {
+        if (result == null || result.isEmpty()) {
             throw new InvalidDestinationLocationException("Invalid destination: " + destination);
         }
 
-        Map<String, Object> first = features.get(0);
-        Map<String, Object> props = (Map<String, Object>) first.get("properties");
+        Map<String, Object> first = result.get(0);
 
-        List<String> validTypes = List.of(
-                "locality", "neighbourhood", "city", "town", "village", "suburb", "region"
+      
+        String placeClass = (first.get("class") != null) ? first.get("class").toString() : null;
+        String placeType  = (first.get("type") != null) ? first.get("type").toString() : null;
+
+      
+        List<String> allowedTypes = List.of(
+                "city", "town", "village", "hamlet", "suburb", "neighbourhood",
+                "locality", "county", "state", "region", "district"
         );
 
-        String type = props.get("type").toString().toLowerCase();
+        List<String> allowedClasses = List.of(
+                "place", "boundary", "admin"
+        );
 
-        if (!validTypes.contains(type)) {
+   
+        if (placeClass == null || placeType == null ||
+                !allowedClasses.contains(placeClass.toLowerCase()) ||
+                !allowedTypes.contains(placeType.toLowerCase())) {
+
             throw new InvalidDestinationLocationException(
-                    "Please enter a valid city/area name only"
+                    "Enter only city/area names, not random words: " + destination
             );
         }
 
-        String country = props.get("country").toString();
-        if (!country.equalsIgnoreCase("india")) {
+      
+        Object latObj = first.get("lat");
+        Object lonObj = first.get("lon");
+
+        if (latObj == null || lonObj == null) {
             throw new InvalidDestinationLocationException(
-                    "Location must be within India only"
+                    "Invalid destination: " + destination + ". Coordinates missing."
             );
         }
-        Map<String, Object> geometry = (Map<String, Object>) first.get("geometry");
-        List<Object> coordinates = (List<Object>) geometry.get("coordinates");
 
-        double lon = Double.parseDouble(coordinates.get(0).toString());
-        double lat = Double.parseDouble(coordinates.get(1).toString());
+        double lat = Double.parseDouble(latObj.toString());
+        double lon = Double.parseDouble(lonObj.toString());
 
         return new GeoCordinates(lat, lon);
     }
