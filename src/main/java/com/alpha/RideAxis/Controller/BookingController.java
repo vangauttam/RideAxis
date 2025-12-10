@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.alpha.RideAxis.ResponseStructure;
 import com.alpha.RideAxis.DTO.BookingDTO;
 import com.alpha.RideAxis.Entites.Booking;
 import com.alpha.RideAxis.Service.BookingService;
@@ -20,11 +21,11 @@ public class BookingController {
     // BODY:  BookingDTO JSON
     // ----------------------------------------
     @PostMapping("/bookVehicle")
-    public ResponseEntity<Booking> bookVehicle(
+    public ResponseEntity<ResponseStructure<Booking>> bookVehicle(
             @RequestParam long mobno,
             @RequestBody BookingDTO dto) {
 
-        Booking booking = bookingService.bookVehicle(mobno, dto);
+        ResponseStructure<Booking> booking = bookingService.bookVehicle(mobno, dto);
         return ResponseEntity.ok(booking);
     }
 }

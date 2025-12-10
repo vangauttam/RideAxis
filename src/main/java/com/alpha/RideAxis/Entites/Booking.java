@@ -34,10 +34,18 @@ public class Booking {
 	private String paymentstatus="not paid";
 	
 	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "payment_id")
 	@JsonIgnore
 	private Payment payement;
 	private String bookingstatus="pending";
+	
+
+	
+	public String getBookingstatus() {
+		return bookingstatus;
+	}
+	public void setBookingstatus(String bookingstatus) {
+		this.bookingstatus = bookingstatus;
+	}
 	public int getId() {
 		return id;
 	}
@@ -101,16 +109,10 @@ public class Booking {
 	public void setPayement(Payment payement) {
 		this.payement = payement;
 	}
-	@Override
-	public String toString() {
-		return "Booking [customer=" + customer + ", vehicle=" + vehicle + ", sourcelocation=" + sourcelocation
-				+ ", destinationlocation=" + destinationlocation + ", distancetravlled=" + distancetravlled + ", fare="
-				+ fare + ", estimatedtimerequired=" + estimatedtimerequired + ", bookingdate=" + bookingdate
-				+ ", paymentstatus=" + paymentstatus + ", payement=" + payement + "]";
-	}
+
 	public Booking(Customer customer, Vehicle vehicle, String sourcelocation, String destinationlocation,
 			double distancetravlled, double fare, double estimatedtimerequired, LocalDate bookingdate,
-			String paymentstatus, Payment payement) {
+			String paymentstatus, Payment payement, String bookingstatus) {
 		super();
 		this.customer = customer;
 		this.vehicle = vehicle;
@@ -122,6 +124,17 @@ public class Booking {
 		this.bookingdate = bookingdate;
 		this.paymentstatus = paymentstatus;
 		this.payement = payement;
+		this.bookingstatus = bookingstatus;
+		
+	}
+	
+	@Override
+	public String toString() {
+		return "Booking [customer=" + customer + ", vehicle=" + vehicle + ", sourcelocation=" + sourcelocation
+				+ ", destinationlocation=" + destinationlocation + ", distancetravlled=" + distancetravlled + ", fare="
+				+ fare + ", estimatedtimerequired=" + estimatedtimerequired + ", bookingdate=" + bookingdate
+				+ ", paymentstatus=" + paymentstatus + ", payement=" + payement + ", bookingstatus=" + bookingstatus
+				+ "]";
 	}
 	public Booking() {
 		super();

@@ -1,18 +1,23 @@
 package com.alpha.RideAxis.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alpha.RideAxis.ResponseStructure;
 import com.alpha.RideAxis.DTO.BookingDTO;
 import com.alpha.RideAxis.Entites.Booking;
 import com.alpha.RideAxis.Entites.Customer;
+import com.alpha.RideAxis.Entites.Driver;
 import com.alpha.RideAxis.Entites.Payment;
 import com.alpha.RideAxis.Entites.Vehicle;
 import com.alpha.RideAxis.Repository.BookingRepository;
 import com.alpha.RideAxis.Repository.CustomerRepository;
+
 import com.alpha.RideAxis.Repository.VehicleRepository;
 
 @Service
@@ -23,58 +28,83 @@ public class BookingService {
 
     @Autowired
     private VehicleRepository vehicleRepo;
-
     @Autowired
-    private BookingRepository bookingRepo;
+    private BookingRepository bookingrepo;
+    private Driver d;
+    
+ 
 
     @Transactional
-    public Booking bookVehicle(long mobno, BookingDTO dto) {
+    public ResponseStructure<Booking> bookVehicle(long mobno, BookingDTO dto) {
 
         // 1️⃣ FIND CUSTOMER BY MOBILE NUMBER
-    	Customer cust = customerRepo.findByMobileno(mobno)
-    	        .orElseThrow(() -> new RuntimeException("Customer not found: " + mobno));
-
-        if (cust == null) {
-            throw new RuntimeException("Customer not found: " + mobno);
-        }
+        Customer customer = customerRepo.findByMobileno(mobno)
+                .orElseThrow(() -> new RuntimeException("Customer not found: " + mobno));
 
         // 2️⃣ FIND VEHICLE BY ID
         Vehicle veh = vehicleRepo.findById(dto.getVehicleId())
                 .orElseThrow(() -> new RuntimeException("Vehicle not found with id: " + dto.getVehicleId()));
 
-        // 3️⃣ CREATE BOOKING OBJECT
+        
+      
+        
+        
+        // 3️⃣ CREATE BOOKING
         Booking booking = new Booking();
-        booking.setCustomer(cust);
+        booking.setCustomer(customer);
         booking.setVehicle(veh);
+       
+ 
 
         booking.setSourcelocation(dto.getSourceLoc());
         booking.setDestinationlocation(dto.getDestinationLoc());
         booking.setDistancetravlled(dto.getDistanceTravelled());
         booking.setEstimatedtimerequired(dto.getEstimatedTime());
+        
         booking.setFare(dto.getFare());
-
-        // booking date → today's date
         booking.setBookingdate(LocalDate.now());
 
+        // *** FIX: Set booking status to BOOKED ***
+        booking.setBookingstatus("booked");
+        bookingrepo.save(booking);
        
+        customer.getBookinglist().add(booking);
+//        d.setbooking(booking);
+        
+        Driver driver = veh.getDriver(); // get driver from vehicle
+        if (driver != null) {
+            if (driver.getBookinglist() == null)
+                driver.setBookinglist(new ArrayList<>());
 
-        // 4️⃣ CREATE PAYMENT ENTITY
-        Payment payment = new Payment();
-        payment.setCustomer(cust);
-        payment.setVehicle(veh);
-        payment.setBooking(booking);
-        payment.setAmount(dto.getFare());
-        payment.setPaymenttype("not paid"); // initial status
+            driver.getBookinglist().add(booking);
+        }
+      
+        veh.setAvailableStatus("booked");
+        
+        customerRepo.save(customer);
+        vehicleRepo.save(veh);
+    
+        
+      
 
-        booking.setPayement(payment);
+//        // 4️⃣ CREATE PAYMENT ENTITY
+//        Payment payment = new Payment();
+//        payment.setCustomer(customer);
+//        payment.setVehicle(veh);
+//        payment.setBooking(booking);
+//        payment.setAmount(dto.getFare());
+//
+//        // PAYMENT TYPE SHOULD BE e.g., "UPI", "CASH", "CARD"
+//        payment.setPaymenttype("not paid"); // since no payment made yet
+//
+//        booking.setPayement(payment); // correct setter name
 
-        // 5️⃣ SAVE BOOKING
-        Booking savedBooking = bookingRepo.save(booking);
-
-        // 6️⃣ ADD BOOKING TO CUSTOMER BOOKING LIST
-        cust.getBookinglist().add(savedBooking);
-        customerRepo.save(cust);
-
-        return savedBooking;
+        // 5️⃣ UPDATE VEHICLE STATUS
+ 
+        ResponseStructure<Booking> rs = new ResponseStructure<Booking>();
+		rs.setStatuscode(HttpStatus.OK.value());
+		rs.setMessage("successfully booked");
+		rs.setData(booking);
+		return rs;
     }
 }
