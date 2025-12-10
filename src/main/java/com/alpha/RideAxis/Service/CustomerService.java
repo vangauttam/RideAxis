@@ -159,13 +159,11 @@ public class CustomerService {
         Customer cust = cr.findByMobileno(mobno)
                 .orElseThrow(() -> new CustomerNotFoundException("Customer not found with mobile: " + mobno));
 
-        GeoCordinates destCoords = geoService.getCordinates(destination);
-        if (destCoords == null)
-            throw new InvalidDestinationLocationException("Invalid destination: " + destination);
+        // --- ONLY ONE API CALL FOR DESTINATION ---
+        GeoCordinates destCoords = geoService.validateAndGetCoordinates(destination);
 
-        GeoCordinates sourceCoords = geoService.getCordinates(cust.getCurrentloc());
-        if (sourceCoords == null)
-            throw new InvalidDestinationLocationException("Invalid customer source location: " + cust.getCurrentloc());
+        // --- ONLY ONE API CALL FOR CUSTOMER SOURCE LOCATION ---
+        GeoCordinates sourceCoords = geoService.validateAndGetCoordinates(cust.getCurrentloc());
 
         double distance = geoService.calculateDistance(
                 sourceCoords.getLatitude(),
@@ -175,7 +173,6 @@ public class CustomerService {
         );
 
         List<Vehicle> vehicles = getVehiclesNearCustomer(cust.getCurrentloc());
-
         List<VehicleDetailDTO> dtolist = mapVehicleDetails(vehicles, distance);
 
         AvailableVehicleDTO availablevehicledto = new AvailableVehicleDTO();
