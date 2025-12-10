@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -16,75 +15,77 @@ public class GeoLocationService {
     private String apiKey;
 
     private final RestTemplate restTemplate = new RestTemplate();
-   
-    public GeoCordinates getCordinates(String destination) {
 
-        // 1. FORWARD GEOCODE
-        String forwardUrl = "https://us1.locationiq.com/v1/search"
-                + "?key=" + apiKey
-                + "&q=" + destination
-                + "&format=json";
 
-        List<Map<String, Object>> result = restTemplate.getForObject(forwardUrl, List.class);
+    public GeoCordinates validateAndGetCoordinates(String destination) {
 
-        if (result == null || result.isEmpty()) {
+        
+        try { Thread.sleep(1100); } catch (Exception ignored) {}
+
+        String url = "https://us1.locationiq.com/v1/search?key=" + apiKey +
+                "&q=" + destination +
+                "&format=json&limit=1&normalizecity=1&dedupe=1";
+
+        Object[] response = restTemplate.getForObject(url, Object[].class);
+
+    
+        if (response == null || response.length == 0)
             throw new InvalidDestinationLocationException("Invalid destination: " + destination);
-        }
 
-        Map<String, Object> first = result.get(0);
-        double lat = Double.parseDouble(first.get("lat").toString());
-        double lon = Double.parseDouble(first.get("lon").toString());
+        Map first = (Map) response[0];
 
-        // 2. REVERSE GEOCODE (VALIDATE CITY)
-        String reverseUrl = "https://us1.locationiq.com/v1/reverse"
-                + "?key=" + apiKey
-                + "&lat=" + lat
-                + "&lon=" + lon
-                + "&format=json";
+        String type = (String) first.get("type");
 
-        Map<String, Object> reverse = restTemplate.getForObject(reverseUrl, Map.class);
-
-        Map<String, Object> address = (Map<String, Object>) reverse.get("address");
-
-        if (address == null) {
-            throw new InvalidDestinationLocationException("Invalid destination: " + destination);
-        }
-
-        // Check if reverse geocode provides a valid city/state/town/village
-        if (address.get("city") == null &&
-            address.get("town") == null &&
-            address.get("village") == null &&
-            address.get("state") == null) {
+        if (type == null ||
+                !(type.equalsIgnoreCase("city")
+                        || type.equalsIgnoreCase("town")
+                        || type.equalsIgnoreCase("village")
+                        || type.equalsIgnoreCase("administrative"))) {
 
             throw new InvalidDestinationLocationException(
-                    "Invalid destination: " + destination + ". No valid city information."
+                    "Invalid destination: " + destination + " (not a valid city)"
+            );
+        }
+        String displayName = (String) first.get("display_name");
+        if (displayName == null ||
+                !displayName.toLowerCase().contains(destination.toLowerCase())) {
+
+            throw new InvalidDestinationLocationException(
+                    "City not found: " + destination
             );
         }
 
-        // Valid destination confirmed
+        String latStr = (String) first.get("lat");
+        String lonStr = (String) first.get("lon");
+
+        if (latStr == null || lonStr == null)
+            throw new InvalidDestinationLocationException("Invalid coordinates for: " + destination);
+
+        double lat = Double.parseDouble(latStr);
+        double lon = Double.parseDouble(lonStr);
+
         return new GeoCordinates(lat, lon);
     }
 
 
-
-   
-    public double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+    public double calculateDistance(double sourceLat, double sourceLon, double destLat, double destLon) {
 
         final int Radius = 6371; // Earth radius in KM
 
-        double dLat = Math.toRadians(lat2 - lat1);
-        double dLon = Math.toRadians(lon2 - lon1);
+        double dLat = Math.toRadians(destLat - sourceLat);
+        double dLon = Math.toRadians(destLon - sourceLon);
 
-        lat1 = Math.toRadians(lat1);
-        lat2 = Math.toRadians(lat2);
+        sourceLat = Math.toRadians(sourceLat);
+        destLat = Math.toRadians(destLat);
 
-        double haversine = Math.sin(dLat / 2) * Math.sin(dLat / 2)
-                + Math.sin(dLon / 2) * Math.sin(dLon / 2)
-                * Math.cos(lat1) * Math.cos(lat2);
+        double haversine =
+                Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                        + Math.sin(dLon / 2) * Math.sin(dLon / 2)
+                        * Math.cos(sourceLat) * Math.cos(destLat);
 
-        double angularDistance = 2 * Math.atan2(Math.sqrt(haversine), Math.sqrt(1 - haversine));
+        double angularDistance =
+                2 * Math.atan2(Math.sqrt(haversine), Math.sqrt(1 - haversine));
 
-        return Radius * angularDistance; 
+        return Radius * angularDistance;
     }
-
 }
