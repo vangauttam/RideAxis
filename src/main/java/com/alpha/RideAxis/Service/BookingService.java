@@ -27,6 +27,16 @@ import com.alpha.RideAxis.Repository.VehicleRepository;
 @Service
 public class BookingService {
 
+    @Autowired
+    private CustomerRepository cr;
+
+    @Autowired
+    private VehicleRepository vr;
+    @Autowired
+    private BookingRepository br;
+    private Driver d;
+    
+ 
 	@Autowired
 	private CustomerRepository customerRepo;
 
@@ -39,6 +49,38 @@ public class BookingService {
 	@Transactional
 	public ResponseEntity<ResponseStructure<Booking>> bookVehicle(long mobno, BookingDTO dto) {
 
+        // 1️⃣ FIND CUSTOMER BY MOBILE NUMBER
+        Customer customer = cr.findByMobileno(mobno)
+                .orElseThrow(() -> new RuntimeException("Customer not found: " + mobno));
+
+        // 2️⃣ FIND VEHICLE BY ID
+        Vehicle veh = vr.findById(dto.getVehicleId())
+                .orElseThrow(() -> new RuntimeException("Vehicle not found with id: " + dto.getVehicleId()));
+
+        
+      
+        
+        
+        // 3️⃣ CREATE BOOKING
+        Booking booking = new Booking();
+        booking.setCustomer(customer);
+        booking.setVehicle(veh);
+       
+ 
+
+        booking.setSourcelocation(dto.getSourceLoc());
+        booking.setDestinationlocation(dto.getDestinationLoc());
+        booking.setDistancetravlled(dto.getDistanceTravelled());
+        booking.setEstimatedtimerequired(dto.getEstimatedTime());
+        
+        booking.setFare(dto.getFare());
+        booking.setBookingdate(LocalDate.now());
+
+        // *** FIX: Set booking status to BOOKED ***
+        booking.setBookingstatus("booked");
+        br.save(booking);
+       
+        customer.getBookinglist().add(booking);
 		// 1️⃣ FIND CUSTOMER BY MOBILE NUMBER
 		Customer customer = customerRepo.findByMobileno(mobno)
 				.orElseThrow(() -> new RuntimeException("Customer not found: " + mobno));
@@ -67,6 +109,16 @@ public class BookingService {
 		customer.getBookinglist().add(booking);
 //        d.setbooking(booking);
 
+            driver.getBookinglist().add(booking);
+        }
+      
+        veh.setAvailableStatus("booked");
+        
+        cr.save(customer);
+        vr.save(veh);
+    
+        
+      
 		Driver driver = veh.getDriver(); // get driver from vehicle
 		if (driver != null) {
 			if (driver.getBookinglist() == null)

@@ -1,11 +1,14 @@
 package com.alpha.RideAxis.Controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.alpha.RideAxis.DTO.CurrentLocationDTO;
 import com.alpha.RideAxis.DTO.RegDriverVehicleDTO;
+import com.alpha.RideAxis.DTO.BookingHistoryDTO;
 import com.alpha.RideAxis.ResponseStructure;
 import com.alpha.RideAxis.Entites.Driver;
 import com.alpha.RideAxis.Entites.Vehicle;
@@ -56,6 +59,15 @@ public class DriverController {
                 .status(response.getStatuscode())
                 .body(response);
     }
+    @GetMapping("/bookingHistory")
+    public ResponseEntity<ResponseStructure<List<BookingHistoryDTO>>> getDriverHistory(
+            @RequestParam long mobno) {
+
+        ResponseStructure<List<BookingHistoryDTO>> response = ds.getDriverBookingHistory(mobno);
+
+        return ResponseEntity.status(response.getStatuscode()).body(response);
+    }
+
 
 
 
