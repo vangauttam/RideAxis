@@ -17,13 +17,12 @@ public class BookingController {
 	@Autowired
 	private BookingService bookingService;
 
-	// ----------------------------------------
-	// POST: /booking/bookVehicle?mobno=9876543210
-	// BODY: BookingDTO JSON
-	// ----------------------------------------
+
+
 	@PostMapping("/bookVehicle")
-	public ResponseEntity<ResponseStructure<Booking>> bookVehicle(@RequestParam long mobno,
-			@RequestBody BookingDTO dto) {
+	public ResponseEntity<ResponseStructure<Booking>> bookVehicle(@RequestParam long mobno,@RequestBody BookingDTO dto) {
+
+  
 
 		return bookingService.bookVehicle(mobno, dto);
 

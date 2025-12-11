@@ -229,7 +229,7 @@ public class DriverService {
             bookinghistorydto.setSourcelocation(booking.getSourcelocation());
             bookinghistorydto.setDestinationlocation(booking.getDestinationlocation());
             bookinghistorydto.setFare(booking.getFare());
-            bookinghistorydto.setDistancetravlled(booking.getDistancetravlled());
+            bookinghistorydto.setDistancetravelled(booking.getDistancetravlled());
             bookinghistorydto.setBookingstatus(booking.getBookingstatus());
             bookinghistorydto.setBookingdate(booking.getBookingdate());
             bookinghistorydto.setEstimatedtimerequired(booking.getEstimatedtimerequired());
