@@ -8,17 +8,22 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.alpha.RideAxis.DTO.AvailableVehicleDTO;
+
 import com.alpha.RideAxis.DTO.RegCustomerDto;
 import com.alpha.RideAxis.DTO.VehicleDetailDTO;
+import com.alpha.RideAxis.Entites.Booking;
 import com.alpha.RideAxis.Entites.Customer;
 import com.alpha.RideAxis.Entites.GeoCordinates;
 import com.alpha.RideAxis.Entites.Vehicle;
 import com.alpha.RideAxis.Exception.CustomerNotFoundException;
 import com.alpha.RideAxis.Exception.InvalidDestinationLocationException;
+import com.alpha.RideAxis.Exception.NoCurrentBookingException;
+import com.alpha.RideAxis.Repository.BookingRepository;
 import com.alpha.RideAxis.Repository.CustomerRepository;
 import com.alpha.RideAxis.Repository.VehicleRepository;
 
@@ -32,6 +37,8 @@ public class CustomerService {
     private CustomerRepository cr;
     @Autowired
     private VehicleRepository vr;
+    @Autowired
+    private BookingRepository br;
 
     @Value("${locationiq.api.key}")
     private String apiKey;
@@ -230,4 +237,10 @@ public class CustomerService {
         return list; 
         
     }
+
+
+    
+
+    
+    
 }

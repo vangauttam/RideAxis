@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.alpha.RideAxis.DTO.AvailableVehicleDTO;
+
 import com.alpha.RideAxis.DTO.RegCustomerDto;
 import com.alpha.RideAxis.Entites.Customer;
 import com.alpha.RideAxis.ResponseStructure;
@@ -63,10 +64,5 @@ public class CustomerController {
                     .status(response.getStatuscode())
                     .body(response);
         }
-        
-        
-        
-      
-        
-
-    }
+}
+     
