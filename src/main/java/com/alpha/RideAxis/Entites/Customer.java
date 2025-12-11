@@ -132,6 +132,17 @@ public class Customer {
 		this.activebookingflag = activebookingflag;
 		this.bookinglist = bookinglist;
 	}
+
+
+	public int getId() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+
+	public void setId(int id) {
+		this.id = id;
+	}
 	
 	
 

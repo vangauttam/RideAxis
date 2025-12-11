@@ -27,6 +27,7 @@ import com.alpha.RideAxis.Repository.VehicleRepository;
 @Service
 public class BookingService {
 
+
 	@Autowired
 	private CustomerRepository customerRepo;
 
@@ -35,9 +36,10 @@ public class BookingService {
 	@Autowired
 	private BookingRepository bookingrepo;
 	private Driver d;
-
+ 
 	@Transactional
 	public ResponseEntity<ResponseStructure<Booking>> bookVehicle(long mobno, BookingDTO dto) {
+
 
 		// 1️⃣ FIND CUSTOMER BY MOBILE NUMBER
 		Customer customer = customerRepo.findByMobileno(mobno)
@@ -57,6 +59,7 @@ public class BookingService {
 		booking.setDistancetravlled(dto.getDistanceTravelled());
 		booking.setEstimatedtimerequired(dto.getEstimatedTime());
 
+
 		booking.setFare(dto.getFare());
 		booking.setBookingdate(LocalDate.now());
 
@@ -65,7 +68,7 @@ public class BookingService {
 		bookingrepo.save(booking);
 
 		customer.getBookinglist().add(booking);
-//        d.setbooking(booking);
+
 
 		Driver driver = veh.getDriver(); // get driver from vehicle
 		if (driver != null) {
@@ -81,6 +84,8 @@ public class BookingService {
 		customerRepo.save(customer);
 		vehicleRepo.save(veh);
 
+            driver.getBookinglist().add(booking);
+        
 //        // 4️⃣ CREATE PAYMENT ENTITY
 //        Payment payment = new Payment();
 //        payment.setCustomer(customer);
@@ -93,14 +98,12 @@ public class BookingService {
 //
 //        booking.setPayement(payment); // correct setter name
 
-		// 5️⃣ UPDATE VEHICLE STATUS
-
 		ResponseStructure<Booking> rs = new ResponseStructure<Booking>();
 		rs.setStatuscode(HttpStatus.OK.value());
 		rs.setMessage("successfully booked");
 		rs.setData(booking);
 		return new ResponseEntity<ResponseStructure<Booking>>(rs, HttpStatus.OK);
-	}
+}
 	public ResponseEntity<ResponseStructure<ActiveBookingDTO>> SeeActiveBooking(long mobno) {
 
         // 1. Fetch customer or throw 404
@@ -128,5 +131,6 @@ public class BookingService {
 
         return new ResponseEntity<ResponseStructure<ActiveBookingDTO>>(rs, HttpStatus.OK);
     }
+
 
 }

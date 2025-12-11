@@ -7,11 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import com.alpha.RideAxis.DTO.ActiveBookingDTO;
 import com.alpha.RideAxis.DTO.AvailableVehicleDTO;
 
 import com.alpha.RideAxis.DTO.RegCustomerDto;
 import com.alpha.RideAxis.Entites.Customer;
 import com.alpha.RideAxis.ResponseStructure;
+import com.alpha.RideAxis.Service.BookingService;
 import com.alpha.RideAxis.Service.CustomerService;
 
 @RestController
@@ -20,6 +23,8 @@ public class CustomerController {
 
     @Autowired
     private CustomerService cs;
+    @Autowired
+    private BookingService bs;
     
  
     

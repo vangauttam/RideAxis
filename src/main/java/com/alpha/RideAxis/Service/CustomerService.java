@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.alpha.RideAxis.DTO.ActiveBookingDTO;
 import com.alpha.RideAxis.DTO.AvailableVehicleDTO;
 
 import com.alpha.RideAxis.DTO.RegCustomerDto;
@@ -65,7 +66,6 @@ public class CustomerService {
         customer.setMobileno(dto.getMobileno());
         customer.setEmailid(dto.getEmail());
 
-        // Get city from API
         String city = getCityFromCoordinates(dto.getLatitude(), dto.getLongitude());
         customer.setCurrentloc(city);
 
@@ -237,10 +237,4 @@ public class CustomerService {
         return list; 
         
     }
-
-
-    
-
-    
-    
 }
