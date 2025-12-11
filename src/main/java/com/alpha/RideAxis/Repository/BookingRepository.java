@@ -12,4 +12,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 	
 
 	
+
+	Booking findActiveBookingByCustomerId(int id);
+    // add custom queries if needed
 }

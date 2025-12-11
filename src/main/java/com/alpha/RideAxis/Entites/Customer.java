@@ -4,9 +4,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -22,61 +20,108 @@ public class Customer {
 	private long mobileno;
 	private String emailid;
 	private String currentloc;
+	private boolean activebookingflag;
 	@JsonIgnore
 	@OneToMany
 	private List<Booking> bookinglist;
 
-	public int getId() {
-		return id;
+	
+	public Customer() {
+		super();
+		// TODO Auto-generated constructor stub
 	}
-	public void setId(int id) {
-		this.id = id;
-	}
+
+
 	public String getName() {
 		return name;
 	}
+
+
 	public void setName(String name) {
 		this.name = name;
 	}
+
+
 	public int getAge() {
 		return age;
 	}
+
+
 	public void setAge(int age) {
 		this.age = age;
 	}
+
+
 	public String getGender() {
 		return gender;
 	}
+
+
 	public void setGender(String gender) {
 		this.gender = gender;
 	}
+
+
 	public long getMobileno() {
 		return mobileno;
 	}
+
+
 	public void setMobileno(long mobileno) {
 		this.mobileno = mobileno;
 	}
+
+
 	public String getEmailid() {
 		return emailid;
 	}
+
+
 	public void setEmailid(String emailid) {
 		this.emailid = emailid;
 	}
+
+
 	public String getCurrentloc() {
 		return currentloc;
 	}
+
+
 	public void setCurrentloc(String currentloc) {
 		this.currentloc = currentloc;
 	}
+
+
+	public boolean isActivebookingflag() {
+		return activebookingflag;
+	}
+
+
+	public void setActivebookingflag(boolean activebookingflag) {
+		this.activebookingflag = activebookingflag;
+	}
+
+
 	public List<Booking> getBookinglist() {
 		return bookinglist;
 	}
+
+
 	public void setBookinglist(List<Booking> bookinglist) {
 		this.bookinglist = bookinglist;
 	}
 
+
+	@Override
+	public String toString() {
+		return "Customer [name=" + name + ", age=" + age + ", gender=" + gender + ", mobileno=" + mobileno
+				+ ", emailid=" + emailid + ", currentloc=" + currentloc + ", activebookingflag=" + activebookingflag
+				+ ", bookinglist=" + bookinglist + "]";
+	}
+
+
 	public Customer(String name, int age, String gender, long mobileno, String emailid, String currentloc,
-			List<Booking> bookinglist) {
+			boolean activebookingflag, List<Booking> bookinglist) {
 		super();
 		this.name = name;
 		this.age = age;
@@ -84,16 +129,8 @@ public class Customer {
 		this.mobileno = mobileno;
 		this.emailid = emailid;
 		this.currentloc = currentloc;
+		this.activebookingflag = activebookingflag;
 		this.bookinglist = bookinglist;
-	}
-	@Override
-	public String toString() {
-		return "Customer [name=" + name + ", age=" + age + ", gender=" + gender + ", mobileno=" + mobileno
-				+ ", emailid=" + emailid + ", currentloc=" + currentloc + ", bookinglist=" + bookinglist + "]";
-	}
-	public Customer() {
-		super();
-		// TODO Auto-generated constructor stub
 	}
 	
 	
