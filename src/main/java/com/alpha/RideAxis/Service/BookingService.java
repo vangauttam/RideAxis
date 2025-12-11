@@ -27,49 +27,62 @@ import com.alpha.RideAxis.Repository.VehicleRepository;
 @Service
 public class BookingService {
 
+    @Autowired
+    private CustomerRepository cr;
 
-	@Autowired
-	private CustomerRepository customerRepo;
+    @Autowired
+    private VehicleRepository vr;
+    @Autowired
+    private BookingRepository br;
+    private Driver d;
+    
 
-	@Autowired
-	private VehicleRepository vehicleRepo;
-	@Autowired
-	private BookingRepository bookingrepo;
-	private Driver d;
  
 	@Transactional
 	public ResponseEntity<ResponseStructure<Booking>> bookVehicle(long mobno, BookingDTO dto) {
 
 
-		// 1️⃣ FIND CUSTOMER BY MOBILE NUMBER
-		Customer customer = customerRepo.findByMobileno(mobno)
-				.orElseThrow(() -> new RuntimeException("Customer not found: " + mobno));
+        // 1️⃣ FIND CUSTOMER BY MOBILE NUMBER
+        Customer customer = cr.findByMobileno(mobno)
+                .orElseThrow(() -> new RuntimeException("Customer not found: " + mobno));
 
-		// 2️⃣ FIND VEHICLE BY ID
-		Vehicle veh = vehicleRepo.findById(dto.getVehicleId())
-				.orElseThrow(() -> new RuntimeException("Vehicle not found with id: " + dto.getVehicleId()));
+        // 2️⃣ FIND VEHICLE BY ID
+        Vehicle veh = vr.findById(dto.getVehicleId())
+                .orElseThrow(() -> new RuntimeException("Vehicle not found with id: " + dto.getVehicleId()));
 
-		// 3️⃣ CREATE BOOKING
-		Booking booking = new Booking();
-		booking.setCustomer(customer);
-		booking.setVehicle(veh);
+        
+      
+        
+        
+        // 3️⃣ CREATE BOOKING
+        Booking booking = new Booking();
+        booking.setCustomer(customer);
+        booking.setVehicle(veh);
+       
+ 
 
-		booking.setSourcelocation(dto.getSourceLoc());
-		booking.setDestinationlocation(dto.getDestinationLoc());
-		booking.setDistancetravlled(dto.getDistanceTravelled());
-		booking.setEstimatedtimerequired(dto.getEstimatedTime());
+        booking.setSourcelocation(dto.getSourceLoc());
+        booking.setDestinationlocation(dto.getDestinationLoc());
+        booking.setDistancetravlled(dto.getDistanceTravelled());
+        booking.setEstimatedtimerequired(dto.getEstimatedTime());
+        
+        booking.setFare(dto.getFare());
+        booking.setBookingdate(LocalDate.now());
 
-
-		booking.setFare(dto.getFare());
-		booking.setBookingdate(LocalDate.now());
-
-		// *** FIX: Set booking status to BOOKED ***
-		booking.setBookingstatus("booked");
-		bookingrepo.save(booking);
-
-		customer.getBookinglist().add(booking);
-
-
+        // *** FIX: Set booking status to BOOKED ***
+        booking.setBookingstatus("booked");
+        br.save(booking);
+       
+        customer.getBookinglist().add(booking);
+		
+      
+        veh.setAvailableStatus("booked");
+        
+        cr.save(customer);
+        vr.save(veh);
+    
+        
+      
 		Driver driver = veh.getDriver(); // get driver from vehicle
 		if (driver != null) {
 			if (driver.getBookinglist() == null)
@@ -81,8 +94,8 @@ public class BookingService {
 
 		veh.setAvailableStatus("booked");
 
-		customerRepo.save(customer);
-		vehicleRepo.save(veh);
+		cr.save(customer);
+		vr.save(veh);
 
             driver.getBookinglist().add(booking);
         
@@ -107,11 +120,11 @@ public class BookingService {
 	public ResponseEntity<ResponseStructure<ActiveBookingDTO>> SeeActiveBooking(long mobno) {
 
         // 1. Fetch customer or throw 404
-        Customer customer = customerRepo.findByMobileno(mobno)
+        Customer customer = cr.findByMobileno(mobno)
                 .orElseThrow(() -> new CustomerNotFoundException("Customer not found with mobile: " + mobno));
 
         // 2. Fetch active booking for that customer
-        Booking booking = bookingrepo.findActiveBookingByCustomerId(customer.getId());
+        Booking booking = br.findActiveBookingByCustomerId(customer.getId());
         if (booking == null) {
             throw new NoCurrentBookingException("No active booking found for mobile: " + mobno);
         }
