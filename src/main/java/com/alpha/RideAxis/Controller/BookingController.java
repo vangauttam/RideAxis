@@ -22,7 +22,7 @@ public class BookingController {
     // ----------------------------------------
     @PostMapping("/bookVehicle")
     public ResponseEntity<ResponseStructure<Booking>> bookVehicle(
-            @RequestParam long mobno,
+        @RequestParam long mobno,
             @RequestBody BookingDTO dto) {
 
         ResponseStructure<Booking> booking = bookingService.bookVehicle(mobno, dto);

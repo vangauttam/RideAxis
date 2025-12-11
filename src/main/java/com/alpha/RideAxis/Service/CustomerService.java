@@ -12,13 +12,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.alpha.RideAxis.DTO.AvailableVehicleDTO;
+import com.alpha.RideAxis.DTO.BookingHistoryDTO;
 import com.alpha.RideAxis.DTO.RegCustomerDto;
 import com.alpha.RideAxis.DTO.VehicleDetailDTO;
+import com.alpha.RideAxis.Entites.Booking;
 import com.alpha.RideAxis.Entites.Customer;
 import com.alpha.RideAxis.Entites.GeoCordinates;
 import com.alpha.RideAxis.Entites.Vehicle;
 import com.alpha.RideAxis.Exception.CustomerNotFoundException;
 import com.alpha.RideAxis.Exception.InvalidDestinationLocationException;
+import com.alpha.RideAxis.Repository.BookingRepository;
 import com.alpha.RideAxis.Repository.CustomerRepository;
 import com.alpha.RideAxis.Repository.VehicleRepository;
 
@@ -32,6 +35,9 @@ public class CustomerService {
     private CustomerRepository cr;
     @Autowired
     private VehicleRepository vr;
+    
+    @Autowired
+    private BookingRepository br;
 
     @Value("${locationiq.api.key}")
     private String apiKey;
@@ -230,4 +236,54 @@ public class CustomerService {
         return list; 
         
     }
+    
+    
+    public ResponseStructure<List<BookingHistoryDTO>> getCustomerBookingHistory(long mobno) {
+
+        ResponseStructure<List<BookingHistoryDTO>> rs = new ResponseStructure<>();
+
+        // Step 1: Fetch Customer
+        Optional<Customer> optionalCustomer = cr.findByMobileno(mobno);
+
+        if (optionalCustomer.isEmpty()) {
+            rs.setStatuscode(404);
+            rs.setMessage("Customer not found with mobile number: " + mobno);
+            rs.setData(null);
+            return rs;
+        }
+
+        Customer customer = optionalCustomer.get();
+
+        // Step 2: Fetch Customer Bookings
+        List<Booking> bookings = br.findByCustomer(customer);
+
+        // Step 3: Convert Booking → DTO
+        List<BookingHistoryDTO> historyList = new ArrayList<>();
+
+        for (Booking b : bookings) {
+
+            BookingHistoryDTO dto = new BookingHistoryDTO();
+
+            dto.setBookingId(b.getId());
+            dto.setSourcelocation(b.getSourcelocation());
+            dto.setDestinationlocation(b.getDestinationlocation());
+            dto.setFare(b.getFare());
+            dto.setDistancetravelled(b.getDistancetravlled());
+            dto.setBookingstatus("completed");
+            dto.setBookingdate(b.getBookingdate());
+            dto.setEstimatedtimerequired(b.getEstimatedtimerequired());
+
+            historyList.add(dto);
+        }
+
+        // Step 4: Response
+        rs.setStatuscode(200);
+        rs.setMessage("Customer Booking History Retrieved Successfully");
+        rs.setData(historyList);
+
+        return rs;
+    }
+
+
+
 }

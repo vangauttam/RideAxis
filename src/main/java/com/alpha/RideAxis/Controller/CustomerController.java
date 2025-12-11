@@ -2,12 +2,15 @@ package com.alpha.RideAxis.Controller;
 
 
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.alpha.RideAxis.DTO.AvailableVehicleDTO;
+import com.alpha.RideAxis.DTO.BookingHistoryDTO;
 import com.alpha.RideAxis.DTO.RegCustomerDto;
 import com.alpha.RideAxis.Entites.Customer;
 import com.alpha.RideAxis.ResponseStructure;
@@ -64,6 +67,15 @@ public class CustomerController {
                     .body(response);
         }
         
+        
+        @GetMapping("/history/{mobno}")
+        public ResponseStructure<List<BookingHistoryDTO>> getCustomerHistory(
+                @PathVariable("mobno") long mobno) {
+
+            return cs.getCustomerBookingHistory(mobno);
+        }
+
+
         
         
       
