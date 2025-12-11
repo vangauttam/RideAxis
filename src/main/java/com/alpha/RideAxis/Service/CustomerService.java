@@ -58,7 +58,6 @@ public class CustomerService {
         customer.setMobileno(dto.getMobileno());
         customer.setEmailid(dto.getEmail());
 
-        // Get city from API
         String city = getCityFromCoordinates(dto.getLatitude(), dto.getLongitude());
         customer.setCurrentloc(city);
 

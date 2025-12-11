@@ -24,12 +24,12 @@ import com.alpha.RideAxis.Repository.VehicleRepository;
 public class BookingService {
 
     @Autowired
-    private CustomerRepository customerRepo;
+    private CustomerRepository cr;
 
     @Autowired
-    private VehicleRepository vehicleRepo;
+    private VehicleRepository vr;
     @Autowired
-    private BookingRepository bookingrepo;
+    private BookingRepository br;
     private Driver d;
     
  
@@ -38,11 +38,11 @@ public class BookingService {
     public ResponseStructure<Booking> bookVehicle(long mobno, BookingDTO dto) {
 
         // 1️⃣ FIND CUSTOMER BY MOBILE NUMBER
-        Customer customer = customerRepo.findByMobileno(mobno)
+        Customer customer = cr.findByMobileno(mobno)
                 .orElseThrow(() -> new RuntimeException("Customer not found: " + mobno));
 
         // 2️⃣ FIND VEHICLE BY ID
-        Vehicle veh = vehicleRepo.findById(dto.getVehicleId())
+        Vehicle veh = vr.findById(dto.getVehicleId())
                 .orElseThrow(() -> new RuntimeException("Vehicle not found with id: " + dto.getVehicleId()));
 
         
@@ -66,7 +66,7 @@ public class BookingService {
 
         // *** FIX: Set booking status to BOOKED ***
         booking.setBookingstatus("booked");
-        bookingrepo.save(booking);
+        br.save(booking);
        
         customer.getBookinglist().add(booking);
 //        d.setbooking(booking);
@@ -81,8 +81,8 @@ public class BookingService {
       
         veh.setAvailableStatus("booked");
         
-        customerRepo.save(customer);
-        vehicleRepo.save(veh);
+        cr.save(customer);
+        vr.save(veh);
     
         
       
