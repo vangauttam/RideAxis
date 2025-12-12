@@ -184,7 +184,8 @@ public class CustomerService {
                 destCoords.getLongitude()
         );
 
-        List<Vehicle> vehicles = getVehiclesNearCustomer(cust.getCurrentloc());
+        List<Vehicle> vehicles = vr.findAvailableVehiclesByCity(cust.getCurrentloc());
+
         List<VehicleDetailDTO> dtolist = mapVehicleDetails(vehicles, distance);
 
         AvailableVehicleDTO availablevehicledto = new AvailableVehicleDTO();
@@ -203,21 +204,21 @@ public class CustomerService {
 
 
 
-    private List<Vehicle> getVehiclesNearCustomer(String customerCity) {
-
-        List<Vehicle> allVehicles = vr.findAll();
-        List<Vehicle> nearby = new ArrayList<>();
-
-        for (Vehicle vehicle : allVehicles) {
-            if (vehicle.getCurrentcity() != null 
-                    && vehicle.getCurrentcity().equalsIgnoreCase(customerCity)) {
-
-                nearby.add(vehicle);
-            }
-        }
-
-        return nearby;
-    }
+//    private List<Vehicle> getVehiclesNearCustomer(String customerCity) {
+//
+//        List<Vehicle> allVehicles = vr.findAll();
+//        List<Vehicle> nearby = new ArrayList<>();
+//
+//        for (Vehicle vehicle : allVehicles) {
+//            if (vehicle.getCurrentcity() != null 
+//                    && vehicle.getCurrentcity().equalsIgnoreCase(customerCity)) {
+//
+//                nearby.add(vehicle);
+//            }
+//        }
+//
+//        return nearby;
+//    }
 
 
 

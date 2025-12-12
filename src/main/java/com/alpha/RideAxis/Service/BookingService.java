@@ -74,6 +74,8 @@ public class BookingService {
         br.save(booking);
        
         customer.getBookinglist().add(booking);
+        customer.setActivebookingflag(true);
+        cr.save(customer);
 		
       
         veh.setAvailableStatus("booked");
@@ -85,10 +87,6 @@ public class BookingService {
       
 		Driver driver = veh.getDriver(); // get driver from vehicle
 		if (driver != null) {
-			if (driver.getBookinglist() == null)
-				driver.setBookinglist(new ArrayList<>());
-
-			driver.getBookinglist().add(booking);
 			driver.setStatus("booked");
 		}
 
@@ -119,31 +117,40 @@ public class BookingService {
 }
 	public ResponseEntity<ResponseStructure<ActiveBookingDTO>> SeeActiveBooking(long mobno) {
 
-        // 1. Fetch customer or throw 404
-        Customer customer = cr.findByMobileno(mobno)
-                .orElseThrow(() -> new CustomerNotFoundException("Customer not found with mobile: " + mobno));
+	    Customer customer = cr.findByMobileno(mobno)
+	            .orElseThrow(() -> new CustomerNotFoundException("Customer not found with mobile: " + mobno));
 
-        // 2. Fetch active booking for that customer
-        Booking booking = br.findActiveBookingByCustomerId(customer.getId());
-        if (booking == null) {
-            throw new NoCurrentBookingException("No active booking found for mobile: " + mobno);
-        }
+	    if (customer.isActivebookingflag()) {
 
-        // 3. Prepare DTO
-        ActiveBookingDTO dto = new ActiveBookingDTO();
-        dto.setCustomername(customer.getName());
-        dto.setCustomermobno(customer.getMobileno());
-        dto.setBooking(booking);
-        dto.setCurrentlocation(booking.getVehicle().getCurrentcity());
+	        // Fetch active booking
+	        Booking booking = br.findActiveBookingByCustomerId(customer.getId());
 
-        // 4. Wrap in response structure
-        ResponseStructure<ActiveBookingDTO> rs = new ResponseStructure<>();
-        rs.setStatuscode(HttpStatus.OK.value());
-        rs.setMessage("Active Booking Fetched Successfully");
-        rs.setData(dto);
+	        
+	        ActiveBookingDTO dto = new ActiveBookingDTO();
+	        dto.setCustomername(customer.getName());
+	        dto.setCustomermobno(customer.getMobileno());
+	        dto.setBooking(booking);
+	        dto.setCurrentlocation(booking.getVehicle().getCurrentcity());
 
-        return new ResponseEntity<ResponseStructure<ActiveBookingDTO>>(rs, HttpStatus.OK);
-    }
+	        ResponseStructure<ActiveBookingDTO> rs = new ResponseStructure<>();
+	        rs.setStatuscode(HttpStatus.OK.value());
+	        rs.setMessage("Active Booking Fetched Successfully");
+	        rs.setData(dto);
+
+	        return new ResponseEntity<ResponseStructure<ActiveBookingDTO>>(rs, HttpStatus.OK);
+
+	    } 
+	    else {
+
+	        ResponseStructure<ActiveBookingDTO> rs = new ResponseStructure<>();
+	        rs.setStatuscode(HttpStatus.OK.value());
+	        rs.setMessage("No active booking available for this customer");
+	        rs.setData(null);
+
+	        return new ResponseEntity<ResponseStructure<ActiveBookingDTO>>(rs, HttpStatus.OK);
+	    }
+	}
+
 
 
 }
