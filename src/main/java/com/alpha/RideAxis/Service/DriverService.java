@@ -7,21 +7,31 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.alpha.RideAxis.Entites.Booking;
+import com.alpha.RideAxis.Entites.Customer;
 import com.alpha.RideAxis.Entites.Driver;
 import com.alpha.RideAxis.Entites.FetchLocation;
+import com.alpha.RideAxis.Entites.Payment;
 import com.alpha.RideAxis.Entites.Vehicle;
+import com.alpha.RideAxis.Exception.BookingNotFoundException;
 import com.alpha.RideAxis.Repository.BookingRepository;
+import com.alpha.RideAxis.Repository.CustomerRepository;
 import com.alpha.RideAxis.Repository.DriverRepository;
 import com.alpha.RideAxis.Repository.FetchLocationRepository;
+import com.alpha.RideAxis.Repository.PaymentRepository;
 import com.alpha.RideAxis.Repository.VehicleRepository;
+
+import jakarta.transaction.Transactional;
+
 import com.alpha.RideAxis.ResponseStructure;
 import com.alpha.RideAxis.DTO.BookingHistoryDTO;
 import com.alpha.RideAxis.DTO.CurrentLocationDTO;
 import com.alpha.RideAxis.DTO.RegDriverVehicleDTO;
+import com.alpha.RideAxis.DTO.RideCompletionDTO;
 
 @Service
 public class DriverService {
@@ -37,6 +47,12 @@ public class DriverService {
     
     @Autowired
     private BookingRepository br;
+    
+    @Autowired
+    private CustomerRepository cr;
+    
+    @Autowired
+    private PaymentRepository pr;
     
     @Autowired
     private RestTemplate restTemplate; 
@@ -243,6 +259,51 @@ public class DriverService {
 
         return rs;
     }
+    @Transactional
+    public ResponseEntity<ResponseStructure<RideCompletionDTO>> payByCash(int bookingId,String paytype) {
+    	Booking booking = br.findById(bookingId)
+    	        .orElseThrow(() -> new BookingNotFoundException());
+
+        booking.setBookingstatus("COMPLETED");   
+        booking.setPaymentstatus("PAID");
+        Customer customer = booking.getCustomer();
+        customer.setActivebookingflag(false);
+       
+
+        Vehicle vehicle = booking.getVehicle();
+        vehicle.setAvailableStatus("AVAILABLE");
+
+
+        Payment payment = new Payment();
+        payment.setVehicle(vehicle);
+        payment.setCustomer(customer);
+        payment.setBooking(booking);
+        payment.setAmount(booking.getFare());
+        payment.setPaymenttype(paytype);
+        cr.save(customer);
+        vr.save(vehicle);
+        br.save(booking);
+        pr.save(payment);
+        booking.setPayment(payment);
+
+        RideCompletionDTO ridecompletiondto = new RideCompletionDTO();
+        ridecompletiondto.setCustomer(customer);
+        ridecompletiondto.setVehicle(vehicle);
+        ridecompletiondto.setBooking(booking);
+        ridecompletiondto.setPayment(payment);
+       
+        
+        ResponseStructure<RideCompletionDTO>rs = new ResponseStructure<>();
+        rs.setMessage("Cash Payment Confirmed");
+        rs.setStatuscode(HttpStatus.OK.value());
+        rs.setData(ridecompletiondto);
+
+        return new ResponseEntity<ResponseStructure<RideCompletionDTO>>(rs, HttpStatus.OK);
+    	
+    	
+    }
+    
+    
 
    
 }

@@ -1,5 +1,8 @@
 package com.alpha.RideAxis.Entites;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -10,15 +13,18 @@ public class Payment {
     private Long id;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "vehicle_id")
     private Vehicle vehicle;
 
     @OneToOne
     @JoinColumn(name = "booking_id")
+    @JsonBackReference("booking-payment")
     private Booking booking;
 
     private double amount;

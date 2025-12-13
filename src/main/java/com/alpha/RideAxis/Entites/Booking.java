@@ -2,7 +2,8 @@ package com.alpha.RideAxis.Entites;
 
 import java.time.LocalDate;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -20,10 +21,12 @@ public class Booking {
 	private int id;
 	@ManyToOne
     @JoinColumn(name = "customer_id")
+	@JsonManagedReference("booking-customer")
     private Customer customer;
 
     @ManyToOne
     @JoinColumn(name = "vehicle_id")
+    @JsonManagedReference("booking-vehicle")
     private Vehicle vehicle;
 	private String sourcelocation;
 	private String destinationlocation;
@@ -33,9 +36,9 @@ public class Booking {
 	private LocalDate bookingdate;
 	private String paymentstatus="not paid";
 	
-	@OneToOne(cascade = CascadeType.ALL)
-	@JsonIgnore
-	private Payment payement;
+	@OneToOne(mappedBy = "booking",cascade = CascadeType.ALL)
+	@JsonManagedReference("booking-payment")
+	private Payment payment;
 	private String bookingstatus="pending";
 	
 
@@ -103,16 +106,16 @@ public class Booking {
 	public void setPaymentstatus(String paymentstatus) {
 		this.paymentstatus = paymentstatus;
 	}
-	public Payment getPayement() {
-		return payement;
+	public Payment getPayment() {
+		return payment;
 	}
-	public void setPayement(Payment payement) {
-		this.payement = payement;
+	public void setPayment(Payment payment) {
+		this.payment = payment;
 	}
 
 	public Booking(Customer customer, Vehicle vehicle, String sourcelocation, String destinationlocation,
 			double distancetravlled, double fare, double estimatedtimerequired, LocalDate bookingdate,
-			String paymentstatus, Payment payement, String bookingstatus) {
+			String paymentstatus, Payment payment, String bookingstatus) {
 		super();
 		this.customer = customer;
 		this.vehicle = vehicle;
@@ -123,7 +126,7 @@ public class Booking {
 		this.estimatedtimerequired = estimatedtimerequired;
 		this.bookingdate = bookingdate;
 		this.paymentstatus = paymentstatus;
-		this.payement = payement;
+		this.payment = payment;
 		this.bookingstatus = bookingstatus;
 		
 	}
@@ -133,7 +136,7 @@ public class Booking {
 		return "Booking [customer=" + customer + ", vehicle=" + vehicle + ", sourcelocation=" + sourcelocation
 				+ ", destinationlocation=" + destinationlocation + ", distancetravlled=" + distancetravlled + ", fare="
 				+ fare + ", estimatedtimerequired=" + estimatedtimerequired + ", bookingdate=" + bookingdate
-				+ ", paymentstatus=" + paymentstatus + ", payement=" + payement + ", bookingstatus=" + bookingstatus
+				+ ", paymentstatus=" + paymentstatus + ", payment=" + payment + ", bookingstatus=" + bookingstatus
 				+ "]";
 	}
 	public Booking() {

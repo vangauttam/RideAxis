@@ -2,7 +2,9 @@ package com.alpha.RideAxis.Entites;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -21,8 +23,8 @@ public class Customer {
 	private String emailid;
 	private String currentloc;
 	private boolean activebookingflag;
-	@JsonIgnore
 	@OneToMany
+	@JsonBackReference("booking-customer")
 	private List<Booking> bookinglist;
 
 	

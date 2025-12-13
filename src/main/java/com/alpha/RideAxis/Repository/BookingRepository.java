@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 import com.alpha.RideAxis.Entites.Booking;
 import com.alpha.RideAxis.Entites.Customer;
 
-public interface BookingRepository extends JpaRepository<Booking, Long> {
+public interface BookingRepository extends JpaRepository<Booking, Integer> {
 
     @Query("SELECT b FROM Booking b WHERE b.customer.id = :customerId AND b.bookingstatus = 'booked'")
     Booking findActiveBookingByCustomerId(@Param("customerId") int customerId);
