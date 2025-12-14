@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.alpha.RideAxis.DTO.CurrentLocationDTO;
 import com.alpha.RideAxis.DTO.RegDriverVehicleDTO;
+import com.alpha.RideAxis.DTO.RideCompletionDTO;
 import com.alpha.RideAxis.DTO.BookingHistoryDTO;
 import com.alpha.RideAxis.ResponseStructure;
 import com.alpha.RideAxis.Entites.Driver;
@@ -59,11 +60,23 @@ public class DriverController {
                 .status(response.getStatuscode())
                 .body(response);
     }
-    @GetMapping("/bookingHistory")
-    public ResponseEntity<ResponseStructure<List<BookingHistoryDTO>>> getDriverHistory(
-            @RequestParam long mobno) {
+    
+    
+//    @GetMapping("/bookingHistory")
+//    public ResponseEntity<ResponseStructure<List<BookingHistoryDTO>>> getDriverHistory(
+//            @RequestParam long mobno) {
+//
+//        ResponseStructure<List<BookingHistoryDTO>> response = ds.getDriverBookingHistory(mobno);
+//
+//        return ResponseEntity.status(response.getStatuscode()).body(response);
+//    }
+    
+    
+    
+    @PostMapping("/cash/{bookingId}")
+    public ResponseEntity<ResponseStructure<RideCompletionDTO>> payByCash(@PathVariable long bookingId) {
 
-        ResponseStructure<List<BookingHistoryDTO>> response = ds.getDriverBookingHistory(mobno);
+        ResponseStructure<RideCompletionDTO> response = ds.paymentByCash(bookingId);
 
         return ResponseEntity.status(response.getStatuscode()).body(response);
     }

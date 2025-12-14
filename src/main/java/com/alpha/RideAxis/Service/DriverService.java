@@ -11,20 +11,28 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.alpha.RideAxis.Entites.Booking;
+import com.alpha.RideAxis.Entites.Customer;
 import com.alpha.RideAxis.Entites.Driver;
 import com.alpha.RideAxis.Entites.FetchLocation;
+import com.alpha.RideAxis.Entites.Payment;
 import com.alpha.RideAxis.Entites.Vehicle;
 import com.alpha.RideAxis.Repository.BookingRepository;
+import com.alpha.RideAxis.Repository.CustomerRepository;
 import com.alpha.RideAxis.Repository.DriverRepository;
 import com.alpha.RideAxis.Repository.FetchLocationRepository;
+import com.alpha.RideAxis.Repository.PaymentRepository;
 import com.alpha.RideAxis.Repository.VehicleRepository;
 import com.alpha.RideAxis.ResponseStructure;
 import com.alpha.RideAxis.DTO.BookingHistoryDTO;
 import com.alpha.RideAxis.DTO.CurrentLocationDTO;
 import com.alpha.RideAxis.DTO.RegDriverVehicleDTO;
+import com.alpha.RideAxis.DTO.RideCompletionDTO;
 
 @Service
 public class DriverService {
+	
+	@Autowired
+	private CustomerRepository cr;
 
     @Autowired
     private DriverRepository dr;
@@ -37,6 +45,10 @@ public class DriverService {
     
     @Autowired
     private BookingRepository br;
+    
+    @Autowired
+    private PaymentRepository pr;
+    
     
     @Autowired
     private RestTemplate restTemplate; 
@@ -207,42 +219,102 @@ public class DriverService {
 
         return rs;
     }
-    public ResponseStructure<List<BookingHistoryDTO>> getDriverBookingHistory(long mobno) {
+    
+//    
+//    public ResponseStructure<List<BookingHistoryDTO>> getDriverBookingHistory(long mobno) {
+//
+//        ResponseStructure<List<BookingHistoryDTO>> rs = new ResponseStructure<>();
+//
+//        Driver driver = dr.findByMobileno(mobno);
+//
+//        if (driver == null) {
+//            rs.setStatuscode(404);
+//            rs.setMessage("Driver not found");
+//            rs.setData(null);
+//            return rs;
+//        }
+//
+//        List<Booking> bookings = driver.getBookinglist();
+//
+//        List<BookingHistoryDTO> bookinghistorydtoList = new ArrayList<>();
+//
+//        for (Booking booking : bookings) {
+//            BookingHistoryDTO bookinghistorydto = new BookingHistoryDTO();
+//            bookinghistorydto.setSourcelocation(booking.getSourcelocation());
+//            bookinghistorydto.setDestinationlocation(booking.getDestinationlocation());
+//            bookinghistorydto.setFare(booking.getFare());
+//            bookinghistorydto.setDistancetravelled(booking.getDistancetravlled());
+//            bookinghistorydto.setBookingstatus(booking.getBookingstatus());
+//            bookinghistorydto.setBookingdate(booking.getBookingdate());
+//            bookinghistorydto.setEstimatedtimerequired(booking.getEstimatedtimerequired());
+//
+//            bookinghistorydtoList.add(bookinghistorydto);
+//        }
+//
+//        rs.setStatuscode(200);
+//        rs.setMessage("Booking history fetched successfully");
+//        rs.setData(bookinghistorydtoList);
+//
+//        return rs;
+//    }
+//    
+    
+    
+    public ResponseStructure<RideCompletionDTO> paymentByCash(long bookingId) {
 
-        ResponseStructure<List<BookingHistoryDTO>> rs = new ResponseStructure<>();
+        ResponseStructure<RideCompletionDTO> rs = new ResponseStructure<>();
 
-        Driver driver = dr.findByMobileno(mobno);
+        Booking booking = br.findById(bookingId).orElse(null);
+       booking.setBookingstatus("completed");
+        booking.setPaymentstatus("paid");
 
-        if (driver == null) {
-            rs.setStatuscode(404);
-            rs.setMessage("Driver not found");
-            rs.setData(null);
-            return rs;
-        }
+        // 1. Reset customer booking flag
+        Customer customer = booking.getCustomer();
+        customer.setActivebookingflag(false);
 
-        List<Booking> bookings = driver.getBookinglist();
+        // 2. Make vehicle available
+        Vehicle vehicle = booking.getVehicle();
+        vehicle.setAvailableStatus("available");
 
-        List<BookingHistoryDTO> bookinghistorydtoList = new ArrayList<>();
+        // 3. Update booking status
+        booking.setBookingstatus("PAYMENT_PENDING");
 
-        for (Booking booking : bookings) {
-            BookingHistoryDTO bookinghistorydto = new BookingHistoryDTO();
-            bookinghistorydto.setSourcelocation(booking.getSourcelocation());
-            bookinghistorydto.setDestinationlocation(booking.getDestinationlocation());
-            bookinghistorydto.setFare(booking.getFare());
-            bookinghistorydto.setDistancetravelled(booking.getDistancetravlled());
-            bookinghistorydto.setBookingstatus(booking.getBookingstatus());
-            bookinghistorydto.setBookingdate(booking.getBookingdate());
-            bookinghistorydto.setEstimatedtimerequired(booking.getEstimatedtimerequired());
+        // 4. Create payment record
+        Payment payment = new Payment();
+        payment.setVehicle(vehicle);
+        payment.setCustomer(customer);
+        payment.setBooking(booking);
+        payment.setAmount(booking.getFare());
+        payment.setPaymenttype("paytype");
 
-            bookinghistorydtoList.add(bookinghistorydto);
-        }
+     
 
+        // 5. Save everything in correct order
+        cr.save(customer);
+        vr.save(vehicle);
+        br.save(booking);
+        pr.save(payment);
+
+       
+       
+        // Build DTO (this uses your existing RideCompletionDTO)
+        RideCompletionDTO dto = new RideCompletionDTO(
+                booking,
+                customer,
+                vehicle,
+                payment
+        );
+
+        // Response
         rs.setStatuscode(200);
-        rs.setMessage("Booking history fetched successfully");
-        rs.setData(bookinghistorydtoList);
+        rs.setMessage("Ride completed. Awaiting cash payment.");
+        rs.setData(dto);
 
         return rs;
     }
+
+    
+    
 
    
 }
