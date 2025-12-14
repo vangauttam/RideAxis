@@ -1,5 +1,6 @@
 package com.alpha.RideAxis.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriUtils;
 
 import com.alpha.RideAxis.Entites.Booking;
 import com.alpha.RideAxis.Entites.Customer;
@@ -32,9 +34,35 @@ import com.alpha.RideAxis.DTO.BookingHistoryDTO;
 import com.alpha.RideAxis.DTO.CurrentLocationDTO;
 import com.alpha.RideAxis.DTO.RegDriverVehicleDTO;
 import com.alpha.RideAxis.DTO.RideCompletionDTO;
+import com.alpha.RideAxis.DTO.UpiPaymentDTO;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+
+import java.io.ByteArrayOutputStream;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class DriverService {
+	public byte[] generateQrCode(String data, int width, int height) {
+	    try {
+	        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+	        Map<EncodeHintType, Object> hints = new HashMap<>();
+	        hints.put(EncodeHintType.MARGIN, 1); // optional, reduces white border
+	        BitMatrix bitMatrix = qrCodeWriter.encode(data, BarcodeFormat.QR_CODE, width, height, hints);
+
+	        ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
+	        MatrixToImageWriter.writeToStream(bitMatrix, "PNG", pngOutputStream);
+	        return pngOutputStream.toByteArray();
+	    } catch (WriterException | java.io.IOException e) {
+	        throw new RuntimeException("Failed to generate QR code", e);
+	    }
+	}
 
     @Autowired
     private DriverRepository dr;
@@ -260,7 +288,7 @@ public class DriverService {
         return rs;
     }
     @Transactional
-    public ResponseEntity<ResponseStructure<RideCompletionDTO>> payByCash(int bookingId,String paytype) {
+    public ResponseEntity<ResponseStructure<RideCompletionDTO>> payByCash(int bookingId) {
     	Booking booking = br.findById(bookingId)
     	        .orElseThrow(() -> new BookingNotFoundException());
 
@@ -279,7 +307,6 @@ public class DriverService {
         payment.setCustomer(customer);
         payment.setBooking(booking);
         payment.setAmount(booking.getFare());
-        payment.setPaymenttype(paytype);
         cr.save(customer);
         vr.save(vehicle);
         br.save(booking);
@@ -302,7 +329,47 @@ public class DriverService {
     	
     	
     }
-    
+    @Value("${qr.api.url}")
+    private String qrApiUrl;
+
+    @Value("${qr.api.size}")
+    private String qrSize;
+    @Transactional
+    public String generateUpiUrl(int bookingId) {
+
+        Booking booking = br.findById(bookingId)
+                .orElseThrow(BookingNotFoundException::new);
+
+        String upiUrl = "upi://pay?pa=hariteja.ramasahayam@okaxis"
+                + "&pn=RideAxis"
+                + "&am=" + booking.getFare()
+                + "&cu=INR"
+                + "&tn=Ride Payment";
+
+        return upiUrl;
+
+    }
+
+    @Transactional
+    public ResponseEntity<ResponseStructure<String>> confirmUpiPayment(Long paymentId) {
+
+        Payment payment = pr.findById(paymentId)
+                .orElseThrow(() -> new RuntimeException("Payment not found"));
+
+        Booking booking = payment.getBooking();
+        booking.setPaymentstatus("PAID");
+
+        pr.save(payment);
+        br.save(booking);
+
+        ResponseStructure<String> rs = new ResponseStructure<>();
+        rs.setMessage("UPI Payment Confirmed");
+        rs.setStatuscode(HttpStatus.OK.value());
+        rs.setData("PAID");
+
+        return new ResponseEntity<>(rs, HttpStatus.OK);
+    }
+   
     
 
    

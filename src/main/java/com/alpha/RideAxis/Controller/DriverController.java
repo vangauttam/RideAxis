@@ -1,8 +1,10 @@
 package com.alpha.RideAxis.Controller;
 
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -68,13 +70,57 @@ public class DriverController {
 
         return ResponseEntity.status(response.getStatuscode()).body(response);
     }
-    
-    @PostMapping("/completeride/paybycash")
-    public ResponseEntity<ResponseStructure<RideCompletionDTO>> payByCash(@RequestParam int bookingId, @RequestParam String paytype) {
-        return ds.payByCash(bookingId,paytype);
+    @GetMapping
+    public ResponseEntity<?> handlePayment(
+                @RequestParam String paytype,
+                @RequestParam(required = false) Integer bookingId,
+                @RequestParam(required = false) Long paymentId) {
+
+            // CASH PAYMENT
+            if (paytype.equalsIgnoreCase("CASH")) {
+
+                if (bookingId == null) {
+                    return ResponseEntity.badRequest()
+                            .body("bookingId is required for CASH payment");
+                }
+
+                return ds.payByCash(bookingId);
+            }
+
+            // UPI PAYMENT (Generate URL only)
+            if (paytype.equalsIgnoreCase("UPI")) {
+
+                if (bookingId == null) {
+                    return ResponseEntity.badRequest()
+                            .body("bookingId is required for UPI payment");
+                }
+
+                String upiUrl = ds.generateUpiUrl(bookingId);
+
+                ResponseStructure<String> rs = new ResponseStructure<>();
+                rs.setStatuscode(HttpStatus.OK.value());
+                rs.setMessage("UPI URL generated. Complete payment to confirm.");
+                rs.setData(upiUrl);
+
+                return ResponseEntity.ok(rs);
+            }
+
+            return ResponseEntity.badRequest()
+                    .body("Invalid paytype. Use CASH or UPI");
+        }
+
+        // ✅ CONFIRM UPI PAYMENT (separate endpoint)
+        @PostMapping("/confirm")
+        public ResponseEntity<ResponseStructure<String>> confirmUpiPayment(
+                @RequestParam Long paymentId) {
+
+            return ds.confirmUpiPayment(paymentId);
+        }
     }
 
 
 
 
-}
+
+
+
