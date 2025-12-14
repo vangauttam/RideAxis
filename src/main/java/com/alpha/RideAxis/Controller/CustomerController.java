@@ -18,7 +18,6 @@ import com.alpha.RideAxis.DTO.BookingHistoryDTO;
 import com.alpha.RideAxis.DTO.RegCustomerDto;
 import com.alpha.RideAxis.Entites.Customer;
 import com.alpha.RideAxis.ResponseStructure;
-import com.alpha.RideAxis.Service.BookingService;
 import com.alpha.RideAxis.Service.CustomerService;
 
 @RestController
@@ -27,8 +26,7 @@ public class CustomerController {
 
     @Autowired
     private CustomerService cs;
-    @Autowired
-    private BookingService bs;
+
     
  
     

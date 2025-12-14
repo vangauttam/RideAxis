@@ -3,7 +3,6 @@ package com.alpha.RideAxis.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -231,8 +230,7 @@ public class DriverService {
     public ResponseStructure<List<BookingHistoryDTO>> getDriverBookingHistory(long mobno) {
 
         ResponseStructure<List<BookingHistoryDTO>> rs = new ResponseStructure<>();
-
-        // Step 1: Fetch Driver
+        
         Driver driver = dr.findByMobileno(mobno);
 
         if (driver == null) {
@@ -242,10 +240,8 @@ public class DriverService {
             return rs;
         }
 
-        // Step 2: Fetch Driver Bookings
         List<Booking> bookings = driver.getBookinglist();
 
-        // Step 3: Convert Booking → RideDetailsDTO
         List<RideDetailsDTO> rddto = new ArrayList<>();
         double totalAmount = 0;
 
@@ -261,7 +257,6 @@ public class DriverService {
             rddto.add(ridedetaildto);
         }
 
-        // Step 4: Wrap inside BookingHistoryDTO
         BookingHistoryDTO historyDTO = new BookingHistoryDTO();
         historyDTO.setHistory(rddto);
         historyDTO.setTotalamount(totalAmount);
@@ -338,10 +333,10 @@ public class DriverService {
         payment.setAmount(booking.getFare());
         payment.setPaymenttype("UPI");
 
-        pr.save(payment);                 // ✅ INSERTS INTO DB
+        pr.save(payment);                 
         booking.setPayment(payment);
 
-        // booking payment is pending until confirm
+        
         booking.setPaymentstatus("PENDING");
 
         br.save(booking);

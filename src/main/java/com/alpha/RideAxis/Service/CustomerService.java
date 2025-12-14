@@ -172,10 +172,10 @@ public class CustomerService {
 
         Customer cust = cr.findByMobileno(mobno).orElseThrow(() -> new CustomerNotFoundException("Customer not found with mobile: " + mobno));
 
-        // --- ONLY ONE API CALL FOR DESTINATION ---
+      
         GeoCordinates destCoords = geoService.validateAndGetCoordinates(destination);
 
-        // --- ONLY ONE API CALL FOR CUSTOMER SOURCE LOCATION ---
+       
         GeoCordinates sourceCoords = geoService.validateAndGetCoordinates(cust.getCurrentloc());
 
         double distance = geoService.calculateDistance(
@@ -202,25 +202,6 @@ public class CustomerService {
 
         return rs;
     }
-
-
-
-//    private List<Vehicle> getVehiclesNearCustomer(String customerCity) {
-//
-//        List<Vehicle> allVehicles = vr.findAll();
-//        List<Vehicle> nearby = new ArrayList<>();
-//
-//        for (Vehicle vehicle : allVehicles) {
-//            if (vehicle.getCurrentcity() != null 
-//                    && vehicle.getCurrentcity().equalsIgnoreCase(customerCity)) {
-//
-//                nearby.add(vehicle);
-//            }
-//        }
-//
-//        return nearby;
-//    }
-
 
 
     private List<VehicleDetailDTO> mapVehicleDetails(List<Vehicle> vehicles, double distance) {
@@ -251,7 +232,6 @@ public class CustomerService {
 
         ResponseStructure<List<BookingHistoryDTO>> rs = new ResponseStructure<>();
 
-        // Step 1: Fetch Customer
         Optional<Customer> optionalCustomer = cr.findByMobileno(mobno);
 
         if (optionalCustomer.isEmpty()) {
@@ -263,10 +243,10 @@ public class CustomerService {
 
         Customer customer = optionalCustomer.get();
 
-        // Step 2: Fetch Customer Bookings
+        
         List<Booking> bookings = br.findByCustomer(customer);
 
-        // Step 3: Convert Booking → DTO
+        
         List<RideDetailsDTO> ridedetailsdto = new ArrayList<>();
         
         double totalamount=0;

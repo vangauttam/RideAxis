@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import com.alpha.RideAxis.DTO.CurrentLocationDTO;
 import com.alpha.RideAxis.DTO.RegDriverVehicleDTO;
-import com.alpha.RideAxis.DTO.RideCompletionDTO;
 import com.alpha.RideAxis.DTO.BookingHistoryDTO;
 import com.alpha.RideAxis.ResponseStructure;
 import com.alpha.RideAxis.Entites.Driver;
@@ -81,7 +80,6 @@ public class DriverController {
                 @RequestParam String paytype,
                 @RequestParam(required = false) Integer bookingId) {
 
-            // CASH PAYMENT
             if (paytype.equalsIgnoreCase("CASH")) {
 
                 if (bookingId == null) {
@@ -92,7 +90,6 @@ public class DriverController {
                 return ds.payByCash(bookingId,paytype);
             }
 
-            // UPI PAYMENT (Generate URL only)
             if (paytype.equalsIgnoreCase("UPI")) {
 
                 if (bookingId == null) {
@@ -114,7 +111,7 @@ public class DriverController {
                     .body("Invalid paytype. Use CASH or UPI");
         }
 
-        // ✅ CONFIRM UPI PAYMENT (separate endpoint)
+
         @PostMapping("/confirm")
         public ResponseEntity<ResponseStructure<String>> confirmUpiPayment(
                 @RequestParam Long paymentId) {
