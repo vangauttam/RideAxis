@@ -75,13 +75,7 @@ public class DriverController {
     
     
     
-    @PostMapping("/cash/{bookingId}")
-    public ResponseEntity<ResponseStructure<RideCompletionDTO>> payByCash(@PathVariable long bookingId) {
-
-        ResponseStructure<RideCompletionDTO> response = ds.paymentByCash(bookingId);
-
-        return ResponseEntity.status(response.getStatuscode()).body(response);
-    }
+  
     @GetMapping
     public ResponseEntity<?> handlePayment(
                 @RequestParam String paytype,
@@ -96,7 +90,7 @@ public class DriverController {
                             .body("bookingId is required for CASH payment");
                 }
 
-                return ds.payByCash(bookingId);
+                return ds.payByCash(bookingId,paytype);
             }
 
             // UPI PAYMENT (Generate URL only)

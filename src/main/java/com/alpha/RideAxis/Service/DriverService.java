@@ -3,6 +3,7 @@ package com.alpha.RideAxis.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,15 +32,8 @@ import com.alpha.RideAxis.DTO.BookingHistoryDTO;
 import com.alpha.RideAxis.DTO.CurrentLocationDTO;
 import com.alpha.RideAxis.DTO.RegDriverVehicleDTO;
 import com.alpha.RideAxis.DTO.RideCompletionDTO;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.EncodeHintType;
-import com.google.zxing.WriterException;
-import com.google.zxing.client.j2se.MatrixToImageWriter;
-import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.QRCodeWriter;
+import com.alpha.RideAxis.DTO.RideDetailsDTO;
 
-import java.io.ByteArrayOutputStream;
-import java.util.HashMap;
 @Service
 public class DriverService {
 
@@ -234,44 +228,55 @@ public class DriverService {
         return rs;
     }
     
-//    
-//    public ResponseStructure<List<BookingHistoryDTO>> getDriverBookingHistory(long mobno) {
-//
-//        ResponseStructure<List<BookingHistoryDTO>> rs = new ResponseStructure<>();
-//
-//        Driver driver = dr.findByMobileno(mobno);
-//
-//        if (driver == null) {
-//            rs.setStatuscode(404);
-//            rs.setMessage("Driver not found");
-//            rs.setData(null);
-//            return rs;
-//        }
-//
-//        List<Booking> bookings = driver.getBookinglist();
-//
-//        List<BookingHistoryDTO> bookinghistorydtoList = new ArrayList<>();
-//
-//        for (Booking booking : bookings) {
-//            BookingHistoryDTO bookinghistorydto = new BookingHistoryDTO();
-//            bookinghistorydto.setSourcelocation(booking.getSourcelocation());
-//            bookinghistorydto.setDestinationlocation(booking.getDestinationlocation());
-//            bookinghistorydto.setFare(booking.getFare());
-//            bookinghistorydto.setDistancetravelled(booking.getDistancetravlled());
-//            bookinghistorydto.setBookingstatus(booking.getBookingstatus());
-//            bookinghistorydto.setBookingdate(booking.getBookingdate());
-//            bookinghistorydto.setEstimatedtimerequired(booking.getEstimatedtimerequired());
-//
-//            bookinghistorydtoList.add(bookinghistorydto);
-//        }
-//
-//        rs.setStatuscode(200);
-//        rs.setMessage("Booking history fetched successfully");
-//        rs.setData(bookinghistorydtoList);
-//
-//        return rs;
-//    }
-//    
+    public ResponseStructure<List<BookingHistoryDTO>> getDriverBookingHistory(long mobno) {
+
+        ResponseStructure<List<BookingHistoryDTO>> rs = new ResponseStructure<>();
+
+        // Step 1: Fetch Driver
+        Driver driver = dr.findByMobileno(mobno);
+
+        if (driver == null) {
+            rs.setStatuscode(404);
+            rs.setMessage("Driver not found with mobile number: " + mobno);
+            rs.setData(null);
+            return rs;
+        }
+
+        // Step 2: Fetch Driver Bookings
+        List<Booking> bookings = driver.getBookinglist();
+
+        // Step 3: Convert Booking → RideDetailsDTO
+        List<RideDetailsDTO> rddto = new ArrayList<>();
+        double totalAmount = 0;
+
+        for (Booking b : bookings) {
+
+            RideDetailsDTO ridedetaildto = new RideDetailsDTO();
+            ridedetaildto.setSourceloc(b.getSourcelocation());
+            ridedetaildto.setDestinationloc(b.getDestinationlocation());
+            ridedetaildto.setFare(b.getFare());
+            ridedetaildto.setDistanceTravelled(b.getDistancetravlled());
+
+            totalAmount += b.getFare();
+            rddto.add(ridedetaildto);
+        }
+
+        // Step 4: Wrap inside BookingHistoryDTO
+        BookingHistoryDTO historyDTO = new BookingHistoryDTO();
+        historyDTO.setHistory(rddto);
+        historyDTO.setTotalamount(totalAmount);
+
+        List<BookingHistoryDTO> responseList = new ArrayList<>();
+        responseList.add(historyDTO);
+
+        rs.setStatuscode(200);
+        rs.setMessage("Driver Booking History Retrieved Successfully");
+        rs.setData(responseList);
+
+        return rs;
+    }
+
+
 
     @Transactional
     public ResponseEntity<ResponseStructure<RideCompletionDTO>> payByCash(int bookingId,String paytype) {
@@ -326,6 +331,20 @@ public class DriverService {
 
         Booking booking = br.findById(bookingId)
                 .orElseThrow(BookingNotFoundException::new);
+        Payment payment = new Payment();
+        payment.setBooking(booking);
+        payment.setCustomer(booking.getCustomer());
+        payment.setVehicle(booking.getVehicle());
+        payment.setAmount(booking.getFare());
+        payment.setPaymenttype("UPI");
+
+        pr.save(payment);                 // ✅ INSERTS INTO DB
+        booking.setPayment(payment);
+
+        // booking payment is pending until confirm
+        booking.setPaymentstatus("PENDING");
+
+        br.save(booking);
 
         String upiUrl = "upi://pay?pa=hariteja.ramasahayam@okaxis"
                 + "&pn=RideAxis"
