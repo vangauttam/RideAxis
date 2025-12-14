@@ -64,14 +64,14 @@ public class DriverController {
     }
     
     
-//    @GetMapping("/bookingHistory")
-//    public ResponseEntity<ResponseStructure<List<BookingHistoryDTO>>> getDriverHistory(
-//            @RequestParam long mobno) {
-//
-//        ResponseStructure<List<BookingHistoryDTO>> response = ds.getDriverBookingHistory(mobno);
-//
-//        return ResponseEntity.status(response.getStatuscode()).body(response);
-//    }
+    @GetMapping("/bookingHistory")
+    public ResponseEntity<ResponseStructure<List<BookingHistoryDTO>>> getDriverHistory(
+            @RequestParam long mobno) {
+
+        ResponseStructure<List<BookingHistoryDTO>> response = ds.getDriverBookingHistory(mobno);
+
+        return ResponseEntity.status(response.getStatuscode()).body(response);
+    }
     
     
     
