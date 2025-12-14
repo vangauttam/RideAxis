@@ -326,6 +326,7 @@ public class DriverService {
 
         Booking booking = br.findById(bookingId)
                 .orElseThrow(BookingNotFoundException::new);
+        
         Payment payment = new Payment();
         payment.setBooking(booking);
         payment.setCustomer(booking.getCustomer());
@@ -358,7 +359,15 @@ public class DriverService {
                 .orElseThrow(() -> new RuntimeException("Payment not found"));
 
         Booking booking = payment.getBooking();
+        booking.setBookingstatus("COMPLETED");   
         booking.setPaymentstatus("PAID");
+        
+        Customer customer = booking.getCustomer();
+        customer.setActivebookingflag(false);
+       
+
+        Vehicle vehicle = booking.getVehicle();
+        vehicle.setAvailableStatus("AVAILABLE");
 
         pr.save(payment);
         br.save(booking);
