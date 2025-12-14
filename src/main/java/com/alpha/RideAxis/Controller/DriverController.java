@@ -76,11 +76,10 @@ public class DriverController {
     
     
   
-    @GetMapping
+    @GetMapping("/payment")
     public ResponseEntity<?> handlePayment(
                 @RequestParam String paytype,
-                @RequestParam(required = false) Integer bookingId,
-                @RequestParam(required = false) Long paymentId) {
+                @RequestParam(required = false) Integer bookingId) {
 
             // CASH PAYMENT
             if (paytype.equalsIgnoreCase("CASH")) {
