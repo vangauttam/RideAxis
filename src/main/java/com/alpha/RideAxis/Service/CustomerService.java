@@ -19,6 +19,7 @@ import com.alpha.RideAxis.DTO.AvailableVehicleDTO;
 import com.alpha.RideAxis.DTO.BookingHistoryDTO;
 
 import com.alpha.RideAxis.DTO.RegCustomerDto;
+import com.alpha.RideAxis.DTO.RideDetailsDTO;
 import com.alpha.RideAxis.DTO.VehicleDetailDTO;
 import com.alpha.RideAxis.Entites.Booking;
 import com.alpha.RideAxis.Entites.Customer;
@@ -266,28 +267,35 @@ public class CustomerService {
         List<Booking> bookings = br.findByCustomer(customer);
 
         // Step 3: Convert Booking → DTO
-        List<BookingHistoryDTO> historyList = new ArrayList<>();
+        List<RideDetailsDTO> ridedetailsdto = new ArrayList<>();
+        
+        double totalamount=0;
 
         for (Booking b : bookings) {
 
-            BookingHistoryDTO dto = new BookingHistoryDTO();
+        	RideDetailsDTO dto = new RideDetailsDTO();
 
-            dto.setBookingId(b.getId());
-            dto.setSourcelocation(b.getSourcelocation());
-            dto.setDestinationlocation(b.getDestinationlocation());
+           
+            dto.setSourceloc(b.getSourcelocation());
+            dto.setDestinationloc(b.getDestinationlocation());
             dto.setFare(b.getFare());
-            dto.setDistancetravelled(b.getDistancetravlled());
-            dto.setBookingstatus("completed");
-            dto.setBookingdate(b.getBookingdate());
-            dto.setEstimatedtimerequired(b.getEstimatedtimerequired());
+            dto.setDistanceTravelled(b.getDistancetravlled());
+            totalamount=totalamount+b.getFare();
+            
 
-            historyList.add(dto);
+            ridedetailsdto.add(dto);
         }
 
-        // Step 4: Response
+        BookingHistoryDTO historyDTO = new BookingHistoryDTO();
+        historyDTO.setHistory(ridedetailsdto);
+        historyDTO.setTotalamount(totalamount);
+
+        List<BookingHistoryDTO> responseList = new ArrayList<>();
+        responseList.add(historyDTO);
+
         rs.setStatuscode(200);
         rs.setMessage("Customer Booking History Retrieved Successfully");
-        rs.setData(historyList);
+        rs.setData(responseList);
 
         return rs;
     }

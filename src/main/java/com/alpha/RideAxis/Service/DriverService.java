@@ -40,23 +40,9 @@ import com.google.zxing.qrcode.QRCodeWriter;
 
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
-
 @Service
 public class DriverService {
-	public byte[] generateQrCode(String data, int width, int height) {
-	    try {
-	        QRCodeWriter qrCodeWriter = new QRCodeWriter();
-	        Map<EncodeHintType, Object> hints = new HashMap<>();
-	        hints.put(EncodeHintType.MARGIN, 1); // optional, reduces white border
-	        BitMatrix bitMatrix = qrCodeWriter.encode(data, BarcodeFormat.QR_CODE, width, height, hints);
 
-	        ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
-	        MatrixToImageWriter.writeToStream(bitMatrix, "PNG", pngOutputStream);
-	        return pngOutputStream.toByteArray();
-	    } catch (WriterException | java.io.IOException e) {
-	        throw new RuntimeException("Failed to generate QR code", e);
-	    }
-	}
 
     @Autowired
     private DriverRepository dr;
@@ -71,11 +57,13 @@ public class DriverService {
     private BookingRepository br;
     
     @Autowired
+
     private CustomerRepository cr;
     
     @Autowired
     private PaymentRepository pr;
     
+  
     @Autowired
     private RestTemplate restTemplate; 
 
@@ -245,44 +233,48 @@ public class DriverService {
 
         return rs;
     }
-    public ResponseStructure<List<BookingHistoryDTO>> getDriverBookingHistory(long mobno) {
+    
+//    
+//    public ResponseStructure<List<BookingHistoryDTO>> getDriverBookingHistory(long mobno) {
+//
+//        ResponseStructure<List<BookingHistoryDTO>> rs = new ResponseStructure<>();
+//
+//        Driver driver = dr.findByMobileno(mobno);
+//
+//        if (driver == null) {
+//            rs.setStatuscode(404);
+//            rs.setMessage("Driver not found");
+//            rs.setData(null);
+//            return rs;
+//        }
+//
+//        List<Booking> bookings = driver.getBookinglist();
+//
+//        List<BookingHistoryDTO> bookinghistorydtoList = new ArrayList<>();
+//
+//        for (Booking booking : bookings) {
+//            BookingHistoryDTO bookinghistorydto = new BookingHistoryDTO();
+//            bookinghistorydto.setSourcelocation(booking.getSourcelocation());
+//            bookinghistorydto.setDestinationlocation(booking.getDestinationlocation());
+//            bookinghistorydto.setFare(booking.getFare());
+//            bookinghistorydto.setDistancetravelled(booking.getDistancetravlled());
+//            bookinghistorydto.setBookingstatus(booking.getBookingstatus());
+//            bookinghistorydto.setBookingdate(booking.getBookingdate());
+//            bookinghistorydto.setEstimatedtimerequired(booking.getEstimatedtimerequired());
+//
+//            bookinghistorydtoList.add(bookinghistorydto);
+//        }
+//
+//        rs.setStatuscode(200);
+//        rs.setMessage("Booking history fetched successfully");
+//        rs.setData(bookinghistorydtoList);
+//
+//        return rs;
+//    }
+//    
 
-        ResponseStructure<List<BookingHistoryDTO>> rs = new ResponseStructure<>();
-
-        Driver driver = dr.findByMobileno(mobno);
-
-        if (driver == null) {
-            rs.setStatuscode(404);
-            rs.setMessage("Driver not found");
-            rs.setData(null);
-            return rs;
-        }
-
-        List<Booking> bookings = driver.getBookinglist();
-
-        List<BookingHistoryDTO> bookinghistorydtoList = new ArrayList<>();
-
-        for (Booking booking : bookings) {
-            BookingHistoryDTO bookinghistorydto = new BookingHistoryDTO();
-            bookinghistorydto.setSourcelocation(booking.getSourcelocation());
-            bookinghistorydto.setDestinationlocation(booking.getDestinationlocation());
-            bookinghistorydto.setFare(booking.getFare());
-            bookinghistorydto.setDistancetravelled(booking.getDistancetravlled());
-            bookinghistorydto.setBookingstatus(booking.getBookingstatus());
-            bookinghistorydto.setBookingdate(booking.getBookingdate());
-            bookinghistorydto.setEstimatedtimerequired(booking.getEstimatedtimerequired());
-
-            bookinghistorydtoList.add(bookinghistorydto);
-        }
-
-        rs.setStatuscode(200);
-        rs.setMessage("Booking history fetched successfully");
-        rs.setData(bookinghistorydtoList);
-
-        return rs;
-    }
     @Transactional
-    public ResponseEntity<ResponseStructure<RideCompletionDTO>> payByCash(int bookingId) {
+    public ResponseEntity<ResponseStructure<RideCompletionDTO>> payByCash(int bookingId,String paytype) {
     	Booking booking = br.findById(bookingId)
     	        .orElseThrow(() -> new BookingNotFoundException());
 
@@ -301,6 +293,7 @@ public class DriverService {
         payment.setCustomer(customer);
         payment.setBooking(booking);
         payment.setAmount(booking.getFare());
+        payment.setPaymenttype(paytype);
         cr.save(customer);
         vr.save(vehicle);
         br.save(booking);
@@ -364,6 +357,8 @@ public class DriverService {
         return new ResponseEntity<>(rs, HttpStatus.OK);
     }
    
+
+    
     
 
    
