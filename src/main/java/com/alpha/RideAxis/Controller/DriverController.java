@@ -118,6 +118,19 @@ public class DriverController {
 
             return ds.confirmUpiPayment(paymentId);
         }
+        
+        
+        @PutMapping("/cancelbooking")
+        public ResponseEntity<ResponseStructure<String>> cancelBooking(
+                @RequestParam int bookingId,
+                @RequestParam Long driverId) {
+
+            return ds.cancelBookingByDriver(bookingId, driverId);
+        }
+        
+        
+        
+        
     }
 
 

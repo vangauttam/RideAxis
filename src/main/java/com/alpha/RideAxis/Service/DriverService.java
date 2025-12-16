@@ -1,5 +1,6 @@
 package com.alpha.RideAxis.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -379,10 +380,60 @@ public class DriverService {
 
         return new ResponseEntity<>(rs, HttpStatus.OK);
     }
-   
+    
+    
+    @Transactional
+    public ResponseEntity<ResponseStructure<String>> cancelBookingByDriver(
+            int bookingId, long driverId) {
 
-    
-    
+        Driver driver = dr.findById(driverId)
+                .orElseThrow(() -> new RuntimeException("Driver not found"));
+
+        Booking booking = br.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        LocalDate today = LocalDate.now();
+
+        // 1️⃣ Cancel current booking FIRST
+        booking.setBookingstatus("cancelled");
+        br.save(booking);
+
+        // 2️⃣ Count today's driver cancellations
+        List<Booking> blist = br.findByDriverIdAndBookingDate(driverId, today);
+
+        int count = 0;
+        for (Booking b : blist) {
+            if ("cancelled".equals(b.getBookingstatus())) {
+                count++;
+            }
+        }
+
+        String message;
+        String data;
+
+        // 3️⃣ Block after 5th cancellation
+        if (count >= 5) {
+            driver.setStatus("blocked");
+
+            Vehicle vehicle = driver.getVehicle();
+            vehicle.setAvailableStatus("BLOCKED");
+
+            dr.save(driver);
+
+            message = "Booking cancelled. Driver blocked due to 5 cancellations today";
+            data = "CANCELLED_AND_DRIVER_BLOCKED";
+        } else {
+            message = "Booking cancelled by driver successfully";
+            data = "CANCELLED";
+        }
+
+        ResponseStructure<String> rs = new ResponseStructure<>();
+        rs.setStatuscode(HttpStatus.OK.value());
+        rs.setMessage(message);
+        rs.setData(data);
+
+        return new ResponseEntity<>(rs, HttpStatus.OK);
+    }
 
    
 }
