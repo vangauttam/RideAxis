@@ -27,9 +27,6 @@ public class CustomerController {
     @Autowired
     private CustomerService cs;
 
-    
- 
-    
 
     @PostMapping("/register")
     public ResponseEntity<ResponseStructure<Customer>> registerCustomer(
@@ -79,11 +76,4 @@ public class CustomerController {
 
             return cs.getCustomerBookingHistory(mobno);
         }
-
-
-        
-        
-      
-        
-
-    }
+ }

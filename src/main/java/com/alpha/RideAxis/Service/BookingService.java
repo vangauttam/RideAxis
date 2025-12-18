@@ -8,10 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.alpha.RideAxis.ResponseStructure;
 import com.alpha.RideAxis.DTO.ActiveBookingDTO;
 import com.alpha.RideAxis.DTO.BookingDTO;
-
 import com.alpha.RideAxis.Entites.Booking;
 import com.alpha.RideAxis.Entites.Customer;
 import com.alpha.RideAxis.Entites.Driver;
@@ -19,8 +17,8 @@ import com.alpha.RideAxis.Entites.Vehicle;
 import com.alpha.RideAxis.Exception.CustomerNotFoundException;
 import com.alpha.RideAxis.Repository.BookingRepository;
 import com.alpha.RideAxis.Repository.CustomerRepository;
-
 import com.alpha.RideAxis.Repository.VehicleRepository;
+import com.alpha.RideAxis.ResponseStructure;
 
 @Service
 public class BookingService {
@@ -30,18 +28,19 @@ public class BookingService {
 
     @Autowired
     private VehicleRepository vr;
+
     @Autowired
     private BookingRepository br;
-    
 
- 
-	@Transactional
-	public ResponseEntity<ResponseStructure<Booking>> bookVehicle(long mobno, BookingDTO dto) {
+    @Transactional
+    public ResponseEntity<ResponseStructure<Booking>> bookVehicle(long mobno, BookingDTO dto) {
 
         Customer customer = cr.findByMobileno(mobno)
                 .orElseThrow(() -> new RuntimeException("Customer not found: " + mobno));
+
         Vehicle veh = vr.findById(dto.getVehicleId())
                 .orElseThrow(() -> new RuntimeException("Vehicle not found with id: " + dto.getVehicleId()));
+
         Booking booking = new Booking();
         booking.setCustomer(customer);
         booking.setVehicle(veh);
@@ -51,74 +50,123 @@ public class BookingService {
         booking.setEstimatedtimerequired(dto.getEstimatedTime());
         booking.setFare(dto.getFare());
         booking.setBookingdate(LocalDate.now());
-        booking.setBookingstatus("booked");
+        booking.setBookingstatus("BOOKED");
         br.save(booking);
-       
+
+        // Update customer
         customer.getBookinglist().add(booking);
         customer.setActivebookingflag(true);
-        cr.save(customer);
-		      
-        veh.setAvailableStatus("booked");
-        
-        cr.save(customer);
-        vr.save(veh);
-        
-		Driver driver = veh.getDriver(); // get driver from vehicle
-		if (driver != null) {
-			driver.setStatus("booked");
-		}
 
-		veh.setAvailableStatus("booked");
-
-		cr.save(customer);
-		vr.save(veh);
-
+        // Update vehicle and driver
+        veh.setAvailableStatus("BOOKED");
+        Driver driver = veh.getDriver();
+        if (driver != null) {
+            driver.setStatus("BOOKED");
             driver.getBookinglist().add(booking);
-       
-		ResponseStructure<Booking> rs = new ResponseStructure<Booking>();
-		rs.setStatuscode(HttpStatus.OK.value());
-		rs.setMessage("successfully booked");
-		rs.setData(booking);
-		return new ResponseEntity<ResponseStructure<Booking>>(rs, HttpStatus.OK);
-}
-	
-	
-	public ResponseEntity<ResponseStructure<ActiveBookingDTO>> SeeActiveBooking(long mobno) {
+        }
 
-	    Customer customer = cr.findByMobileno(mobno)
-	            .orElseThrow(() -> new CustomerNotFoundException("Customer not found with mobile: " + mobno));
+        ResponseStructure<Booking> rs = new ResponseStructure<>();
+        rs.setStatuscode(HttpStatus.OK.value());
+        rs.setMessage("Vehicle booked successfully");
+        rs.setData(booking);
+        return ResponseEntity.ok(rs);
+    }
 
-	    if (customer.isActivebookingflag()) {
+    public ResponseEntity<ResponseStructure<ActiveBookingDTO>> seeActiveBooking(long mobno) {
 
-	      
-	        Booking booking = br.findActiveBookingByCustomerId(customer.getId());
+        Customer customer = cr.findByMobileno(mobno)
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found with mobile: " + mobno));
 
-	        
-	        ActiveBookingDTO dto = new ActiveBookingDTO();
-	        dto.setCustomername(customer.getName());
-	        dto.setCustomermobno(customer.getMobileno());
-	        dto.setBooking(booking);
-	        dto.setCurrentlocation(booking.getVehicle().getCurrentcity());
+        if (!customer.isActivebookingflag()) {
+            ResponseStructure<ActiveBookingDTO> rs = new ResponseStructure<>();
+            rs.setStatuscode(HttpStatus.OK.value());
+            rs.setMessage("No active booking available for this customer");
+            rs.setData(null);
+            return ResponseEntity.ok(rs);
+        }
 
-	        ResponseStructure<ActiveBookingDTO> rs = new ResponseStructure<>();
-	        rs.setStatuscode(HttpStatus.OK.value());
-	        rs.setMessage("Active Booking Fetched Successfully");
-	        rs.setData(dto);
+        Booking booking = br.findActiveBookingByCustomerId((int) customer.getId());
+        if (booking == null) {
+            ResponseStructure<ActiveBookingDTO> rs = new ResponseStructure<>();
+            rs.setStatuscode(HttpStatus.OK.value());
+            rs.setMessage("No active booking found");
+            rs.setData(null);
+            return ResponseEntity.ok(rs);
+        }
 
-	        return new ResponseEntity<ResponseStructure<ActiveBookingDTO>>(rs, HttpStatus.OK);
+        ActiveBookingDTO dto = new ActiveBookingDTO();
+        dto.setCustomername(customer.getName());
+        dto.setCustomermobno(customer.getMobileno());
+        dto.setBooking(booking);
+        dto.setCurrentlocation(booking.getVehicle().getCurrentcity());
 
-	    } 
-	    else {
+        ResponseStructure<ActiveBookingDTO> rs = new ResponseStructure<>();
+        rs.setStatuscode(HttpStatus.OK.value());
+        rs.setMessage("Active Booking Fetched Successfully");
+        rs.setData(dto);
 
-	        ResponseStructure<ActiveBookingDTO> rs = new ResponseStructure<>();
-	        rs.setStatuscode(HttpStatus.OK.value());
-	        rs.setMessage("No active booking available for this customer");
-	        rs.setData(null);
+        return ResponseEntity.ok(rs);
+    }
 
-	        return new ResponseEntity<ResponseStructure<ActiveBookingDTO>>(rs, HttpStatus.OK);
-	    }
-	}
+    @Transactional
+    public ResponseEntity<ResponseStructure<Booking>> cancelRideByCustomer(int customerId, int bookingId) {
+
+        Customer customer = cr.findById(customerId)
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+
+        Booking booking = br.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        if (booking.getCustomer().getId() != customer.getId()) {
+            throw new RuntimeException("Booking does not belong to this customer");
+        }
 
 
+        if ("COMPLETED".equalsIgnoreCase(booking.getBookingstatus())) {
+            throw new RuntimeException("Completed ride cannot be cancelled");
+        }
 
+        if ("CUSTOMER_CANCELLED".equalsIgnoreCase(booking.getBookingstatus())) {
+            throw new RuntimeException("Ride already cancelled");
+        }
+
+        double currentRidePenalty = booking.getFare() * 0.10;
+        customer.setPenaltyamount(customer.getPenaltyamount() + currentRidePenalty);
+        customer.setActivebookingflag(false);
+
+        booking.setBookingstatus("CUSTOMER_CANCELLED");
+
+        Vehicle vehicle = booking.getVehicle();
+        vehicle.setAvailableStatus("AVAILABLE");
+
+        ResponseStructure<Booking> rs = new ResponseStructure<>();
+        rs.setStatuscode(HttpStatus.OK.value());
+        rs.setMessage("Ride cancelled successfully. Penalty applied.");
+        rs.setData(booking);
+
+        return ResponseEntity.ok(rs);
+    }
+
+    @Transactional
+    public ResponseEntity<ResponseStructure<Booking>> completeRide(int bookingId) {
+
+        Booking booking = br.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        booking.setBookingstatus("COMPLETED");
+
+        Customer customer = booking.getCustomer();
+        customer.setPenaltyamount(0.0);
+        customer.setActivebookingflag(false);
+
+        Vehicle vehicle = booking.getVehicle();
+        vehicle.setAvailableStatus("AVAILABLE");
+
+        ResponseStructure<Booking> rs = new ResponseStructure<>();
+        rs.setStatuscode(HttpStatus.OK.value());
+        rs.setMessage("Ride completed successfully. Penalty reset.");
+        rs.setData(booking);
+
+        return ResponseEntity.ok(rs);
+    }
 }
