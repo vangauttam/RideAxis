@@ -21,6 +21,7 @@ public class Customer {
 	private String emailid;
 	private String currentloc;
 	private boolean activebookingflag;
+	private double penaltyamount;
 	@OneToMany
 	@JsonBackReference("booking-customer")
 	private List<Booking> bookinglist;
@@ -100,6 +101,14 @@ public class Customer {
 	public void setActivebookingflag(boolean activebookingflag) {
 		this.activebookingflag = activebookingflag;
 	}
+	public double getPenaltyamount() {
+		return penaltyamount;
+	}
+
+
+	public void setPenaltyamount(double penaltyamount) {
+		this.penaltyamount = penaltyamount;
+	}
 
 
 	public List<Booking> getBookinglist() {
@@ -110,19 +119,10 @@ public class Customer {
 	public void setBookinglist(List<Booking> bookinglist) {
 		this.bookinglist = bookinglist;
 	}
-
-
-	@Override
-	public String toString() {
-		return "Customer [name=" + name + ", age=" + age + ", gender=" + gender + ", mobileno=" + mobileno
-				+ ", emailid=" + emailid + ", currentloc=" + currentloc + ", activebookingflag=" + activebookingflag
-				+ ", bookinglist=" + bookinglist + "]";
-	}
-
-
-	public Customer(String name, int age, String gender, long mobileno, String emailid, String currentloc,
-			boolean activebookingflag, List<Booking> bookinglist) {
+public Customer(int id, String name, int age, String gender, long mobileno, String emailid, String currentloc,
+			boolean activebookingflag, double penaltyamount, List<Booking> bookinglist) {
 		super();
+		this.id = id;
 		this.name = name;
 		this.age = age;
 		this.gender = gender;
@@ -130,16 +130,19 @@ public class Customer {
 		this.emailid = emailid;
 		this.currentloc = currentloc;
 		this.activebookingflag = activebookingflag;
+		this.penaltyamount = penaltyamount;
 		this.bookinglist = bookinglist;
 	}
-
-
-	public int getId() {
+@Override
+public String toString() {
+	return "Customer [id=" + id + ", name=" + name + ", age=" + age + ", gender=" + gender + ", mobileno=" + mobileno
+			+ ", emailid=" + emailid + ", currentloc=" + currentloc + ", activebookingflag=" + activebookingflag
+			+ ", penaltyamount=" + penaltyamount + ", bookinglist=" + bookinglist + "]";
+}
+public int getId() {
 		// TODO Auto-generated method stub
 		return id;
 	}
-
-
 	public void setId(int id) {
 		this.id = id;
 	}

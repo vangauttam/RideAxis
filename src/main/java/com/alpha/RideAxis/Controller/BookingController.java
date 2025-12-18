@@ -14,21 +14,32 @@ import com.alpha.RideAxis.Service.BookingService;
 @RequestMapping("/booking")
 public class BookingController {
 
-	@Autowired
-	private BookingService bookingService;
+    @Autowired
+    private BookingService bookingService;
 
+    @PostMapping("/bookVehicle")
+    public ResponseEntity<ResponseStructure<Booking>> bookVehicle(
+            @RequestParam long mobno,
+            @RequestBody BookingDTO dto) {
+        return bookingService.bookVehicle(mobno, dto);
+    }
 
+    @GetMapping("/seeactivebooking")
+    public ResponseEntity<ResponseStructure<ActiveBookingDTO>> seeActiveBooking(
+            @RequestParam long mobno) {
+        return bookingService.seeActiveBooking(mobno);
+    }
 
-	@PostMapping("/bookVehicle")
-	public ResponseEntity<ResponseStructure<Booking>> bookVehicle(@RequestParam long mobno,@RequestBody BookingDTO dto) {
+    @PutMapping("/cancelride")
+    public ResponseEntity<ResponseStructure<Booking>> cancelRideByCustomer(
+            @RequestParam int customerId,
+            @RequestParam int bookingId) {
+        return bookingService.cancelRideByCustomer(customerId, bookingId);
+    }
 
-  
-
-		return bookingService.bookVehicle(mobno, dto);
-
-	}
-	 @GetMapping("/seeactivebooking")
-     public ResponseEntity<ResponseStructure<ActiveBookingDTO>> SeeActiveBooking( @RequestParam long mobno){
-     	return bookingService.SeeActiveBooking(mobno);
-     }
+    @PutMapping("/completeride")
+    public ResponseEntity<ResponseStructure<Booking>> completeRide(
+            @RequestParam int bookingId) {
+        return bookingService.completeRide(bookingId);
+    }
 }
