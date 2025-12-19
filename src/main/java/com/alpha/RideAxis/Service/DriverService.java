@@ -18,6 +18,9 @@ import com.alpha.RideAxis.Entites.FetchLocation;
 import com.alpha.RideAxis.Entites.Payment;
 import com.alpha.RideAxis.Entites.Vehicle;
 import com.alpha.RideAxis.Exception.BookingNotFoundException;
+import com.alpha.RideAxis.Exception.DriverNotFoundException;
+import com.alpha.RideAxis.Exception.NoCurrentBookingException;
+import com.alpha.RideAxis.Exception.VehicleNotFoundException;
 import com.alpha.RideAxis.Repository.BookingRepository;
 import com.alpha.RideAxis.Repository.CustomerRepository;
 import com.alpha.RideAxis.Repository.DriverRepository;
@@ -28,6 +31,7 @@ import com.alpha.RideAxis.Repository.VehicleRepository;
 import jakarta.transaction.Transactional;
 
 import com.alpha.RideAxis.ResponseStructure;
+import com.alpha.RideAxis.DTO.ActiveBookingDriverDTO;
 import com.alpha.RideAxis.DTO.BookingHistoryDTO;
 import com.alpha.RideAxis.DTO.CurrentLocationDTO;
 import com.alpha.RideAxis.DTO.RegDriverVehicleDTO;
@@ -435,7 +439,47 @@ public class DriverService {
         return new ResponseEntity<>(rs, HttpStatus.OK);
     }
 
+    public ResponseEntity<ResponseStructure<ActiveBookingDriverDTO>> seeActiveBooking(long mobileno) {
+
+        // 1️⃣ Find driver
+        Driver driver = dr.findByMobileno(mobileno);
+        if (driver == null) {
+            throw new DriverNotFoundException();
+        }
+
+        // 2️⃣ Get vehicle
+        Vehicle vehicle = driver.getVehicle();
+        if (vehicle == null) {
+            throw new VehicleNotFoundException();
+        }
+
+        // 3️⃣ Find active booking
+        Booking booking = br.findActiveBookingByVehicle(vehicle);
+        if (booking == null) {
+            throw new NoCurrentBookingException();
+        }
+
+        // 4️⃣ Prepare DTO
+        ActiveBookingDriverDTO dto = new ActiveBookingDriverDTO();
+        dto.setBooking(booking);
+        dto.setDrivername(driver.getDname());
+        dto.setDrivermobno(driver.getMobileno());
+        dto.setCurrentlocation(vehicle.getCurrentcity());
+
+        ResponseStructure<ActiveBookingDriverDTO> rs = new ResponseStructure<>();
+        rs.setStatuscode(HttpStatus.OK.value());
+        rs.setMessage("Current booking fetched successfully");
+        rs.setData(dto);
+
+        return ResponseEntity.ok(rs);
+    }
+
    
 }
     
+
+
+
+
+
 

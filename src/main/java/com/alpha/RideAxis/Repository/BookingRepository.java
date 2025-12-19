@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.alpha.RideAxis.Entites.Booking;
 import com.alpha.RideAxis.Entites.Customer;
+import com.alpha.RideAxis.Entites.Vehicle;
 
 public interface BookingRepository extends JpaRepository<Booking, Integer> {
 
@@ -33,7 +34,14 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     	);
 
 
-    
+    @Query("""
+    	    SELECT b
+    	    FROM Booking b
+    	    WHERE b.vehicle = :vehicle
+    	      AND b.bookingstatus = 'BOOKED'
+    	""")
+    	Booking findActiveBookingByVehicle(@Param("vehicle") Vehicle vehicle);
+
 
 
     

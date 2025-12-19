@@ -169,4 +169,47 @@ public class BookingService {
 
         return ResponseEntity.ok(rs);
     }
+    
+    public ResponseEntity<ResponseStructure<ActiveBookingDTO>> SeeActiveBooking(long mobno) {
+
+	    Customer customer = cr.findByMobileno(mobno)
+	            .orElseThrow(() -> new CustomerNotFoundException("Customer not found with mobile: " + mobno));
+
+	    if (customer.isActivebookingflag()) {
+
+	      
+	        Booking booking = br.findActiveBookingByCustomerId(customer.getId());
+
+	        
+	        ActiveBookingDTO dto = new ActiveBookingDTO();
+	        dto.setCustomername(customer.getName());
+	        dto.setCustomermobno(customer.getMobileno());
+	        dto.setBooking(booking);
+	        dto.setCurrentlocation(booking.getVehicle().getCurrentcity());
+
+	        ResponseStructure<ActiveBookingDTO> rs = new ResponseStructure<>();
+	        rs.setStatuscode(HttpStatus.OK.value());
+	        rs.setMessage("Active Booking Fetched Successfully");
+	        rs.setData(dto);
+
+	        return new ResponseEntity<ResponseStructure<ActiveBookingDTO>>(rs, HttpStatus.OK);
+
+	    } 
+	    else {
+
+	        ResponseStructure<ActiveBookingDTO> rs = new ResponseStructure<>();
+	        rs.setStatuscode(HttpStatus.OK.value());
+	        rs.setMessage("No active booking available for this customer");
+	        rs.setData(null);
+
+	        return new ResponseEntity<ResponseStructure<ActiveBookingDTO>>(rs, HttpStatus.OK);
+	    }
+	}
 }
+
+
+
+
+
+
+
