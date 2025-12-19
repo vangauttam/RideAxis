@@ -39,8 +39,8 @@ public class BookingController {
 
     @PutMapping("/completeride")
     public ResponseEntity<ResponseStructure<Booking>> completeRide(
-            @RequestParam int bookingId,@RequestParam int otp) {
-        return bookingService.completeRide(bookingId,otp);
+            @RequestParam int bookingId) {
+        return bookingService.completeRide(bookingId);
     }
     @GetMapping("/getotp")
     public ResponseEntity<ResponseStructure<Integer>> getotp(

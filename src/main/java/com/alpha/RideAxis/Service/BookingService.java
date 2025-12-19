@@ -175,19 +175,11 @@ public class BookingService {
     }
 
     @Transactional
-    public ResponseEntity<ResponseStructure<Booking>> completeRide(int bookingId,int otp) {
+    public ResponseEntity<ResponseStructure<Booking>> completeRide(int bookingId) {
 
         Booking booking = br.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
-        // OTP STAGE CHECK
-        if (!"DROP".equalsIgnoreCase(booking.getOtpStage())) {
-            throw new RuntimeException("Ride not ready for completion");
-        }
-
-        // OTP VALIDATION
-        if (!booking.getOtp().equals(otp)) {
-            throw new RuntimeException("Invalid OTP");
-        }
+     
 
         booking.setBookingstatus("COMPLETED");
 
