@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.alpha.RideAxis.DTO.CurrentLocationDTO;
 import com.alpha.RideAxis.DTO.RegDriverVehicleDTO;
+import com.alpha.RideAxis.DTO.ActiveBookingDriverDTO;
 import com.alpha.RideAxis.DTO.BookingHistoryDTO;
 import com.alpha.RideAxis.ResponseStructure;
 import com.alpha.RideAxis.Entites.Driver;
@@ -128,7 +129,12 @@ public class DriverController {
             return ds.cancelBookingByDriver(bookingId, driverId);
         }
         
-        
+        @GetMapping("/seeActiveBooking")
+        public ResponseEntity<ResponseStructure<ActiveBookingDriverDTO>> seeActiveBooking(
+                @RequestParam long mobileno) {
+            return ds.seeActiveBooking(mobileno);
+        }
+
         
         
     }
