@@ -15,6 +15,7 @@ import com.alpha.RideAxis.Entites.Booking;
 import com.alpha.RideAxis.Entites.Customer;
 import com.alpha.RideAxis.Entites.Driver;
 import com.alpha.RideAxis.Entites.Vehicle;
+import com.alpha.RideAxis.Exception.BookingNotFoundException;
 import com.alpha.RideAxis.Exception.CustomerNotFoundException;
 import com.alpha.RideAxis.Repository.BookingRepository;
 import com.alpha.RideAxis.Repository.CustomerRepository;
@@ -58,6 +59,8 @@ public class BookingService {
         booking.setFare(dto.getFare());
         booking.setBookingdate(LocalDate.now());
         booking.setBookingstatus("BOOKED");
+        booking.setOtp(generateOtp());
+        booking.setOtpStage("PICKUP");   
         br.save(booking);
 
         // Update customer
@@ -172,10 +175,19 @@ public class BookingService {
     }
 
     @Transactional
-    public ResponseEntity<ResponseStructure<Booking>> completeRide(int bookingId) {
+    public ResponseEntity<ResponseStructure<Booking>> completeRide(int bookingId,int otp) {
 
         Booking booking = br.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
+        // OTP STAGE CHECK
+        if (!"DROP".equalsIgnoreCase(booking.getOtpStage())) {
+            throw new RuntimeException("Ride not ready for completion");
+        }
+
+        // OTP VALIDATION
+        if (!booking.getOtp().equals(otp)) {
+            throw new RuntimeException("Invalid OTP");
+        }
 
         booking.setBookingstatus("COMPLETED");
 
@@ -228,7 +240,55 @@ public class BookingService {
 
 	        return new ResponseEntity<ResponseStructure<ActiveBookingDTO>>(rs, HttpStatus.OK);
 	    }
+	    
+	    
 	}
+    
+    public ResponseEntity<ResponseStructure<Integer>> getotp(int bookingid) {
+
+        Booking b = br.findById(bookingid)
+                .orElseThrow(() -> new BookingNotFoundException());
+
+        if ("COMPLETED".equalsIgnoreCase(b.getBookingstatus())) {
+            throw new RuntimeException("OTP not allowed for completed ride");
+        }
+
+        ResponseStructure<Integer> rs = new ResponseStructure<>();
+        rs.setStatuscode(HttpStatus.OK.value());
+        rs.setMessage("OTP sent successfully");
+        rs.setData(b.getOtp());
+
+        return ResponseEntity.ok(rs);
+    }
+    @Transactional
+    public ResponseEntity<ResponseStructure<Booking>> startRide(int bookingId, int otp) {
+
+        Booking booking = br.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        if (!"PICKUP".equalsIgnoreCase(booking.getOtpStage())) {
+            throw new RuntimeException("Ride already started");
+        }
+
+        if (!booking.getOtp().equals(otp)) {
+            throw new RuntimeException("Invalid Pickup OTP");
+        }
+
+        booking.setBookingstatus("IN_PROGRESS");
+
+        // generate DROP OTP
+        booking.setOtp(generateOtp());
+        booking.setOtpStage("DROP");
+
+        ResponseStructure<Booking> rs = new ResponseStructure<>();
+        rs.setStatuscode(HttpStatus.OK.value());
+        rs.setMessage("Ride started successfully");
+        rs.setData(booking);
+
+        return ResponseEntity.ok(rs);
+    }
+
+
 }
 
 

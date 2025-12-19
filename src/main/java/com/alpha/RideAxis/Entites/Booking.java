@@ -39,18 +39,11 @@ public class Booking {
 	@JsonManagedReference("booking-payment")
 	private Payment payment;
 	private String bookingstatus="pending";
-	
-	
-
-	
-	public String getBookingstatus() {
-		return bookingstatus;
-	}
-	public void setBookingstatus(String bookingstatus) {
-		this.bookingstatus = bookingstatus;
-	}
-	public int getId() {
-		return id;
+	private Integer otp;
+	private String otpStage;
+	public Booking() {
+		super();
+		// TODO Auto-generated constructor stub
 	}
 	public Customer getCustomer() {
 		return customer;
@@ -112,10 +105,35 @@ public class Booking {
 	public void setPayment(Payment payment) {
 		this.payment = payment;
 	}
-
+	public String getBookingstatus() {
+		return bookingstatus;
+	}
+	public void setBookingstatus(String bookingstatus) {
+		this.bookingstatus = bookingstatus;
+	}
+	public Integer getOtp() {
+		return otp;
+	}
+	public void setOtp(Integer otp) {
+		this.otp = otp;
+	}
+	public String getOtpStage() {
+		return otpStage;
+	}
+	public void setOtpStage(String otpStage) {
+		this.otpStage = otpStage;
+	}
+	@Override
+	public String toString() {
+		return "Booking [customer=" + customer + ", vehicle=" + vehicle + ", sourcelocation=" + sourcelocation
+				+ ", destinationlocation=" + destinationlocation + ", distancetravlled=" + distancetravlled + ", fare="
+				+ fare + ", estimatedtimerequired=" + estimatedtimerequired + ", bookingdate=" + bookingdate
+				+ ", paymentstatus=" + paymentstatus + ", payment=" + payment + ", bookingstatus=" + bookingstatus
+				+ ", otp=" + otp + ", otpStage=" + otpStage + "]";
+	}
 	public Booking(Customer customer, Vehicle vehicle, String sourcelocation, String destinationlocation,
 			double distancetravlled, double fare, double estimatedtimerequired, LocalDate bookingdate,
-			String paymentstatus, Payment payment, String bookingstatus) {
+			String paymentstatus, Payment payment, String bookingstatus, Integer otp, String otpStage) {
 		super();
 		this.customer = customer;
 		this.vehicle = vehicle;
@@ -128,20 +146,14 @@ public class Booking {
 		this.paymentstatus = paymentstatus;
 		this.payment = payment;
 		this.bookingstatus = bookingstatus;
-		
+		this.otp = otp;
+		this.otpStage = otpStage;
 	}
-	
-	@Override
-	public String toString() {
-		return "Booking [customer=" + customer + ", vehicle=" + vehicle + ", sourcelocation=" + sourcelocation
-				+ ", destinationlocation=" + destinationlocation + ", distancetravlled=" + distancetravlled + ", fare="
-				+ fare + ", estimatedtimerequired=" + estimatedtimerequired + ", bookingdate=" + bookingdate
-				+ ", paymentstatus=" + paymentstatus + ", payment=" + payment + ", bookingstatus=" + bookingstatus
-				+ "]";
+	public int getId() {
+		return id;
 	}
-	public Booking() {
-		super();
-		// TODO Auto-generated constructor stub
+	public void setId(int id) {
+		this.id = id;
 	}
 	
 	
