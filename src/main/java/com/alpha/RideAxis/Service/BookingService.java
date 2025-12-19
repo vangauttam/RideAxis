@@ -1,6 +1,7 @@
 package com.alpha.RideAxis.Service;
 
 import java.time.LocalDate;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,6 +32,12 @@ public class BookingService {
 
     @Autowired
     private BookingRepository br;
+    @Autowired
+    private MailService ms;
+   
+    private int generateOtp() {
+        return 1000 + new Random().nextInt(9000);
+    }
 
     @Transactional
     public ResponseEntity<ResponseStructure<Booking>> bookVehicle(long mobno, BookingDTO dto) {
@@ -64,6 +71,23 @@ public class BookingService {
             driver.setStatus("BOOKED");
             driver.getBookinglist().add(booking);
         }
+        String message =
+                "Hello " + customer.getName() + ",\n\n" +
+                "Your ride has been successfully booked.\n\n" +
+                "Booking ID : " + booking.getId() + "\n" +
+                "Vehicle    : " + veh.getVname() + " (" + veh.getVehicleno() + ")\n" +
+                "From       : " + booking.getSourcelocation() + "\n" +
+                "To         : " + booking.getDestinationlocation() + "\n" +
+                "Fare       : ₹" + booking.getFare() + "\n\n" +
+                "Thank you for choosing RideAxis.\n" +
+                "Have a safe journey 🚕";
+
+        // 4️⃣ SEND MAIL
+        ms.sendMail(
+                "uttamvanga@gmail.com",
+                "RideAxis - Booking Confirmed",
+                message
+        );
 
         ResponseStructure<Booking> rs = new ResponseStructure<>();
         rs.setStatuscode(HttpStatus.OK.value());

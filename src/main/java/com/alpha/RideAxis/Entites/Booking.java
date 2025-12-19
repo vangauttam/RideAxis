@@ -40,6 +40,7 @@ public class Booking {
 	private Payment payment;
 	private String bookingstatus="pending";
 	
+	
 
 	
 	public String getBookingstatus() {
