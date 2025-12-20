@@ -81,7 +81,8 @@ public class BookingService {
                 "Vehicle    : " + veh.getVname() + " (" + veh.getVehicleno() + ")\n" +
                 "From       : " + booking.getSourcelocation() + "\n" +
                 "To         : " + booking.getDestinationlocation() + "\n" +
-                "Fare       : ₹" + booking.getFare() + "\n\n" +
+                "Fare       : ₹" + booking.getFare() + "\n" +
+                "Otp        :"+booking.getOtp()+"\n\n"+
                 "Thank you for choosing RideAxis.\n" +
                 "Have a safe journey 🚕";
 
@@ -182,13 +183,19 @@ public class BookingService {
      
 
         booking.setBookingstatus("COMPLETED");
+        booking.setOtpStage("DROP");
 
         Customer customer = booking.getCustomer();
         customer.setPenaltyamount(0.0);
         customer.setActivebookingflag(false);
 
         Vehicle vehicle = booking.getVehicle();
+        
         vehicle.setAvailableStatus("AVAILABLE");
+        Driver driver = booking.getVehicle().getDriver();
+        driver.setStatus("AVAILABLE");
+        
+      
 
         ResponseStructure<Booking> rs = new ResponseStructure<>();
         rs.setStatuscode(HttpStatus.OK.value());
@@ -268,9 +275,8 @@ public class BookingService {
 
         booking.setBookingstatus("IN_PROGRESS");
 
-        // generate DROP OTP
-        booking.setOtp(generateOtp());
-        booking.setOtpStage("DROP");
+        
+       
 
         ResponseStructure<Booking> rs = new ResponseStructure<>();
         rs.setStatuscode(HttpStatus.OK.value());

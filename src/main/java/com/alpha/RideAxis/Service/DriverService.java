@@ -75,6 +75,7 @@ public class DriverService {
         driver.setMobileno(dto.getMobileno());
         driver.setGender(dto.getGender());
         driver.setMailid(dto.getMailid());
+        driver.setStatus("Available");
 
         Vehicle vehicle = new Vehicle();
         vehicle.setVname(dto.getVname());
