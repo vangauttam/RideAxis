@@ -33,12 +33,12 @@ public class Booking {
 	private double fare;
 	private double estimatedtimerequired;
 	private LocalDate bookingdate;
-	private String paymentstatus="not paid";
+	private String paymentstatus="NOT PAID";
 	
 	@OneToOne(mappedBy = "booking",cascade = CascadeType.ALL)
 	@JsonManagedReference("booking-payment")
 	private Payment payment;
-	private String bookingstatus="pending";
+	private String bookingstatus="PENDING";
 	private Integer otp;
 	private String otpStage;
 	public Booking() {

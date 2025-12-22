@@ -87,7 +87,7 @@ public class DriverService {
         vehicle.setLatitude(dto.getLatitude());
         vehicle.setLongitude(dto.getLongitude());
         vehicle.setAveragespeed(dto.getAveragespeed());
-        vehicle.setAvailableStatus("Available");
+        vehicle.setAvailableStatus("AVAILABLE");
 
         
         
@@ -399,16 +399,16 @@ public class DriverService {
 
         LocalDate today = LocalDate.now();
 
-        // 1️⃣ Cancel current booking FIRST
-        booking.setBookingstatus("cancelled");
+        
+        booking.setBookingstatus("CANCELLED");
         br.save(booking);
 
-        // 2️⃣ Count today's driver cancellations
+       
         List<Booking> blist = br.findByDriverIdAndBookingDate(driverId, today);
 
         int count = 0;
         for (Booking b : blist) {
-            if ("cancelled".equals(b.getBookingstatus())) {
+            if ("CANCELLED".equals(b.getBookingstatus())) {
                 count++;
             }
         }
@@ -416,7 +416,7 @@ public class DriverService {
         String message;
         String data;
 
-        // 3️⃣ Block after 5th cancellation
+        
         if (count >= 5) {
             driver.setStatus("blocked");
 
@@ -442,25 +442,25 @@ public class DriverService {
 
     public ResponseEntity<ResponseStructure<ActiveBookingDriverDTO>> seeActiveBooking(long mobileno) {
 
-        // 1️⃣ Find driver
+        
         Driver driver = dr.findByMobileno(mobileno);
         if (driver == null) {
             throw new DriverNotFoundException();
         }
 
-        // 2️⃣ Get vehicle
+        
         Vehicle vehicle = driver.getVehicle();
         if (vehicle == null) {
             throw new VehicleNotFoundException();
         }
 
-        // 3️⃣ Find active booking
+       
         Booking booking = br.findActiveBookingByVehicle(vehicle);
         if (booking == null) {
             throw new NoCurrentBookingException();
         }
 
-        // 4️⃣ Prepare DTO
+       
         ActiveBookingDriverDTO dto = new ActiveBookingDriverDTO();
         dto.setBooking(booking);
         dto.setDrivername(driver.getDname());
