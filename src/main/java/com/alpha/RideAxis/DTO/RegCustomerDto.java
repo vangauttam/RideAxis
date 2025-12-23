@@ -8,6 +8,13 @@ public class RegCustomerDto {
 	private String email;
 	private String latitude;
 	private String longitude;
+	private String password;
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
 	public String getName() {
 		return name;
 	}
@@ -50,13 +57,10 @@ public class RegCustomerDto {
 	public void setLongitude(String longitude) {
 		this.longitude = longitude;
 	}
-	@Override
-	public String toString() {
-		return "RegCustomerDto [name=" + name + ", age=" + age + ", gender=" + gender + ", mobileno=" + mobileno
-				+ ", email=" + email + ", latitude=" + latitude + ", longitude=" + longitude + "]";
-	}
+	
+	
 	public RegCustomerDto(String name, int age, String gender, long mobileno, String email, String latitude,
-			String longitude) {
+			String longitude, String password) {
 		super();
 		this.name = name;
 		this.age = age;
@@ -65,6 +69,13 @@ public class RegCustomerDto {
 		this.email = email;
 		this.latitude = latitude;
 		this.longitude = longitude;
+		this.password = password;
+	}
+	@Override
+	public String toString() {
+		return "RegCustomerDto [name=" + name + ", age=" + age + ", gender=" + gender + ", mobileno=" + mobileno
+				+ ", email=" + email + ", latitude=" + latitude + ", longitude=" + longitude + ", password=" + password
+				+ "]";
 	}
 	public RegCustomerDto() {
 		super();

@@ -17,6 +17,13 @@ public class RegDriverVehicleDTO {
 	private double longitude;
 	private double priceperkm;
 	private double averagespeed;
+	private String password;
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
 	public String getLicenceno() {
 		return licenceno;
 	}
@@ -113,17 +120,29 @@ public class RegDriverVehicleDTO {
 	public void setAveragespeed(double averagespeed) {
 		this.averagespeed = averagespeed;
 	}
-	@Override
-	public String toString() {
-		return "RegDriverVehicleDTO [licenceno=" + licenceno + ", upiid=" + upiid + ", dname=" + dname + ", age=" + age
-				+ ", mobileno=" + mobileno + ", gender=" + gender + ", mailid=" + mailid + ", vname=" + vname
-				+ ", vehicleno=" + vehicleno + ", type=" + type + ", model=" + model + ", capacity=" + capacity
-				+ ", latitude=" + latitude + ", longitude=" + longitude + ", priceperkm=" + priceperkm
-				+ ", averagespeed=" + averagespeed + "]";
-	}
+
+	/**
+	 * @param licenceno
+	 * @param upiid
+	 * @param dname
+	 * @param age
+	 * @param mobileno
+	 * @param gender
+	 * @param mailid
+	 * @param vname
+	 * @param vehicleno
+	 * @param type
+	 * @param model
+	 * @param capacity
+	 * @param latitude
+	 * @param longitude
+	 * @param priceperkm
+	 * @param averagespeed
+	 * @param password
+	 */
 	public RegDriverVehicleDTO(String licenceno, String upiid, String dname, int age, long mobileno, String gender,
 			String mailid, String vname, String vehicleno, String type, String model, int capacity, double latitude,
-			double longitude, double priceperkm, double averagespeed) {
+			double longitude, double priceperkm, double averagespeed, String password) {
 		super();
 		this.licenceno = licenceno;
 		this.upiid = upiid;
@@ -141,6 +160,15 @@ public class RegDriverVehicleDTO {
 		this.longitude = longitude;
 		this.priceperkm = priceperkm;
 		this.averagespeed = averagespeed;
+		this.password = password;
+	}
+	@Override
+	public String toString() {
+		return "RegDriverVehicleDTO [licenceno=" + licenceno + ", upiid=" + upiid + ", dname=" + dname + ", age=" + age
+				+ ", mobileno=" + mobileno + ", gender=" + gender + ", mailid=" + mailid + ", vname=" + vname
+				+ ", vehicleno=" + vehicleno + ", type=" + type + ", model=" + model + ", capacity=" + capacity
+				+ ", latitude=" + latitude + ", longitude=" + longitude + ", priceperkm=" + priceperkm
+				+ ", averagespeed=" + averagespeed + ", password=" + password + "]";
 	}
 	public RegDriverVehicleDTO() {
 		super();

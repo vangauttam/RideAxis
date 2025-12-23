@@ -24,6 +24,7 @@ import com.alpha.RideAxis.DTO.VehicleDetailDTO;
 import com.alpha.RideAxis.Entites.Booking;
 import com.alpha.RideAxis.Entites.Customer;
 import com.alpha.RideAxis.Entites.GeoCordinates;
+import com.alpha.RideAxis.Entites.User;
 import com.alpha.RideAxis.Entites.Vehicle;
 import com.alpha.RideAxis.Exception.CustomerNotFoundException;
 
@@ -75,6 +76,11 @@ public class CustomerService {
 
         String city = getCityFromCoordinates(dto.getLatitude(), dto.getLongitude());
         customer.setCurrentloc(city);
+        
+        User user=new User();
+        user.setMobileno(dto.getMobileno());
+        user.setPassword(dto.getPassword());
+        user.setRole("CUSTOMER");
 
         customer = cr.save(customer);
 
