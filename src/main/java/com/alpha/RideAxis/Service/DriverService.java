@@ -16,6 +16,7 @@ import com.alpha.RideAxis.Entites.Customer;
 import com.alpha.RideAxis.Entites.Driver;
 import com.alpha.RideAxis.Entites.FetchLocation;
 import com.alpha.RideAxis.Entites.Payment;
+import com.alpha.RideAxis.Entites.User;
 import com.alpha.RideAxis.Entites.Vehicle;
 import com.alpha.RideAxis.Exception.BookingNotFoundException;
 import com.alpha.RideAxis.Exception.DriverNotFoundException;
@@ -90,6 +91,10 @@ public class DriverService {
         vehicle.setAvailableStatus("AVAILABLE");
 
         
+        User user=new User();
+        user.setMobileno(dto.getMobileno());
+        user.setPassword(dto.getPassword());
+        user.setRole("DRIVER");
         
         driver.setVehicle(vehicle);
         vehicle.setDriver(driver);

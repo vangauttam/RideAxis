@@ -30,6 +30,16 @@ public class Driver {
 	@OneToOne(mappedBy = "driver",cascade = CascadeType.ALL)
 	private Vehicle vehicle;
 	
+	
+	@OneToOne
+	private User user;
+	
+	public User getUser() {
+		return user;
+	}
+	public void setUser(User user) {
+		this.user = user;
+	}
 	@OneToMany
 	private List<Booking> bookinglist;
 	public List<Booking> getBookinglist() {
@@ -98,26 +108,7 @@ public class Driver {
 	public void setVehicle(Vehicle vehicle) {
 		this.vehicle = vehicle;
 	}
-	@Override
-	public String toString() {
-		return "Driver [driverid=" + driverid + ", licenceno=" + licenceno + ", upiid=" + upiid + ", dname=" + dname + ", status="
-				+ status + ", age=" + age + ", mobileno=" + mobileno + ", gender=" + gender + ", mailid=" + mailid
-				+ ", vehicle=" + vehicle + "]";
-	}
-	public Driver(Long driverid, String licenceno, String upiid, String dname, String status, int age, long mobileno,
-			String gender, String mailid, Vehicle vehicle) {
-		super();
-		this.driverid = driverid;
-		this.licenceno = licenceno;
-		this.upiid = upiid;
-		this.dname = dname;
-		this.status = status;
-		this.age = age;
-		this.mobileno = mobileno;
-		this.gender = gender;
-		this.mailid = mailid;
-		this.vehicle = vehicle;
-	}
+	
 	public Driver() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -130,5 +121,29 @@ public class Driver {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	@Override
+	public String toString() {
+		return "Driver [driverid=" + driverid + ", licenceno=" + licenceno + ", upiid=" + upiid + ", dname=" + dname
+				+ ", status=" + status + ", age=" + age + ", mobileno=" + mobileno + ", gender=" + gender + ", mailid="
+				+ mailid + ", vehicle=" + vehicle + ", user=" + user + ", bookinglist=" + bookinglist + "]";
+	}
+	
+	public Driver(Long driverid, String licenceno, String upiid, String dname, String status, int age, long mobileno,
+			String gender, String mailid, Vehicle vehicle, User user, List<Booking> bookinglist) {
+		super();
+		this.driverid = driverid;
+		this.licenceno = licenceno;
+		this.upiid = upiid;
+		this.dname = dname;
+		this.status = status;
+		this.age = age;
+		this.mobileno = mobileno;
+		this.gender = gender;
+		this.mailid = mailid;
+		this.vehicle = vehicle;
+		this.user = user;
+		this.bookinglist = bookinglist;
+	}
+	
 
 }

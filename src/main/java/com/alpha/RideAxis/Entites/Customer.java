@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 @Entity
 public class Customer {
 	@Id
@@ -25,8 +26,20 @@ public class Customer {
 	@OneToMany
 	@JsonBackReference("booking-customer")
 	private List<Booking> bookinglist;
+	@OneToOne
+	private User user;
 
 	
+	public User getUser() {
+		return user;
+	}
+
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+
 	public Customer() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -119,8 +132,9 @@ public class Customer {
 	public void setBookinglist(List<Booking> bookinglist) {
 		this.bookinglist = bookinglist;
 	}
-public Customer(int id, String name, int age, String gender, long mobileno, String emailid, String currentloc,
-			boolean activebookingflag, double penaltyamount, List<Booking> bookinglist) {
+
+	public Customer(int id, String name, int age, String gender, long mobileno, String emailid, String currentloc,
+			boolean activebookingflag, double penaltyamount, List<Booking> bookinglist, User user) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -132,13 +146,19 @@ public Customer(int id, String name, int age, String gender, long mobileno, Stri
 		this.activebookingflag = activebookingflag;
 		this.penaltyamount = penaltyamount;
 		this.bookinglist = bookinglist;
+		this.user = user;
 	}
+
+
 @Override
-public String toString() {
-	return "Customer [id=" + id + ", name=" + name + ", age=" + age + ", gender=" + gender + ", mobileno=" + mobileno
-			+ ", emailid=" + emailid + ", currentloc=" + currentloc + ", activebookingflag=" + activebookingflag
-			+ ", penaltyamount=" + penaltyamount + ", bookinglist=" + bookinglist + "]";
-}
+	public String toString() {
+		return "Customer [id=" + id + ", name=" + name + ", age=" + age + ", gender=" + gender + ", mobileno="
+				+ mobileno + ", emailid=" + emailid + ", currentloc=" + currentloc + ", activebookingflag="
+				+ activebookingflag + ", penaltyamount=" + penaltyamount + ", bookinglist=" + bookinglist + ", user="
+				+ user + "]";
+	}
+
+
 public int getId() {
 		// TODO Auto-generated method stub
 		return id;
