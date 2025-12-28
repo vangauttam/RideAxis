@@ -3,12 +3,15 @@ package com.alpha.RideAxis.Entites;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -23,6 +26,7 @@ public class Driver {
 	private String dname;
 	private String status;
 	private int age;
+	@Column(unique = true, nullable = false)
 	private long mobileno;
 	private String gender;
 	private String mailid;
@@ -31,14 +35,15 @@ public class Driver {
 	private Vehicle vehicle;
 	
 	
-	@OneToOne
-	private User user;
+	@OneToOne(optional = false)
+	@JoinColumn(name = "userr_id", nullable = false)
+	private Userr userr;
 	
-	public User getUser() {
-		return user;
+	public Userr getUserr() {
+		return userr;
 	}
-	public void setUser(User user) {
-		this.user = user;
+	public void setUserr(Userr userr) {
+		this.userr = userr;
 	}
 	@OneToMany
 	private List<Booking> bookinglist;
@@ -113,23 +118,15 @@ public class Driver {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public String getCurrentcity() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	public Driver orElseThrow(Object object) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 	@Override
 	public String toString() {
 		return "Driver [driverid=" + driverid + ", licenceno=" + licenceno + ", upiid=" + upiid + ", dname=" + dname
 				+ ", status=" + status + ", age=" + age + ", mobileno=" + mobileno + ", gender=" + gender + ", mailid="
-				+ mailid + ", vehicle=" + vehicle + ", user=" + user + ", bookinglist=" + bookinglist + "]";
+				+ mailid + ", vehicle=" + vehicle + ", userr=" + userr + ", bookinglist=" + bookinglist + "]";
 	}
 	
 	public Driver(Long driverid, String licenceno, String upiid, String dname, String status, int age, long mobileno,
-			String gender, String mailid, Vehicle vehicle, User user, List<Booking> bookinglist) {
+			String gender, String mailid, Vehicle vehicle, Userr userr, List<Booking> bookinglist) {
 		super();
 		this.driverid = driverid;
 		this.licenceno = licenceno;
@@ -141,7 +138,7 @@ public class Driver {
 		this.gender = gender;
 		this.mailid = mailid;
 		this.vehicle = vehicle;
-		this.user = user;
+		this.userr = userr;
 		this.bookinglist = bookinglist;
 	}
 	

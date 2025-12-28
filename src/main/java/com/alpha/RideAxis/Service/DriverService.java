@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import com.alpha.RideAxis.Entites.Booking;
@@ -16,7 +17,7 @@ import com.alpha.RideAxis.Entites.Customer;
 import com.alpha.RideAxis.Entites.Driver;
 import com.alpha.RideAxis.Entites.FetchLocation;
 import com.alpha.RideAxis.Entites.Payment;
-import com.alpha.RideAxis.Entites.User;
+import com.alpha.RideAxis.Entites.Userr;
 import com.alpha.RideAxis.Entites.Vehicle;
 import com.alpha.RideAxis.Exception.BookingNotFoundException;
 import com.alpha.RideAxis.Exception.DriverNotFoundException;
@@ -27,6 +28,7 @@ import com.alpha.RideAxis.Repository.CustomerRepository;
 import com.alpha.RideAxis.Repository.DriverRepository;
 import com.alpha.RideAxis.Repository.FetchLocationRepository;
 import com.alpha.RideAxis.Repository.PaymentRepository;
+import com.alpha.RideAxis.Repository.UserrRepository;
 import com.alpha.RideAxis.Repository.VehicleRepository;
 
 import jakarta.transaction.Transactional;
@@ -61,13 +63,37 @@ public class DriverService {
     
     @Autowired
     private PaymentRepository pr;
+    @Autowired
+    private UserrRepository ur;
+
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
     
   
     @Autowired
     private RestTemplate restTemplate; 
 
+    @Transactional
     public ResponseStructure<Driver> registerDriverWithVehicle(RegDriverVehicleDTO dto) {
 
+        ResponseStructure<Driver> rs = new ResponseStructure<>();
+
+        // ✅ 1. Check duplicate mobile
+        if (ur.existsByMobileno(dto.getMobileno())) {
+            rs.setStatuscode(HttpStatus.CONFLICT.value());
+            rs.setMessage("Mobile number already registered");
+            rs.setData(null);
+            return rs;
+        }
+
+        // ✅ 2. Create User
+        Userr userr = new Userr();
+        userr.setMobileno(dto.getMobileno());
+        userr.setPassword(passwordEncoder.encode(dto.getPassword()));
+        userr.setRole("DRIVER");
+        userr = ur.save(userr);
+
+        // ✅ 3. Create Driver
         Driver driver = new Driver();
         driver.setLicenceno(dto.getLicenceno());
         driver.setUpiid(dto.getUpiid());
@@ -76,41 +102,38 @@ public class DriverService {
         driver.setMobileno(dto.getMobileno());
         driver.setGender(dto.getGender());
         driver.setMailid(dto.getMailid());
-        driver.setStatus("Available");
+        driver.setStatus("AVAILABLE");
 
+        // 🔥 IMPORTANT: link user
+        driver.setUserr(userr);
+
+        // ✅ 4. Create Vehicle
         Vehicle vehicle = new Vehicle();
         vehicle.setVname(dto.getVname());
         vehicle.setVehicleno(dto.getVehicleno());
         vehicle.setType(dto.getType());
         vehicle.setModel(dto.getModel());
         vehicle.setCapacity(dto.getCapacity());
-        vehicle.setPriceperkm(dto.getPriceperkm()); 
+        vehicle.setPriceperkm(dto.getPriceperkm());
         vehicle.setLatitude(dto.getLatitude());
         vehicle.setLongitude(dto.getLongitude());
         vehicle.setAveragespeed(dto.getAveragespeed());
         vehicle.setAvailableStatus("AVAILABLE");
 
-        
-        User user=new User();
-        user.setMobileno(dto.getMobileno());
-        user.setPassword(dto.getPassword());
-        user.setRole("DRIVER");
-        
+        // ✅ 5. Bi-directional mapping
         driver.setVehicle(vehicle);
         vehicle.setDriver(driver);
 
+        // ✅ 6. Save ONLY driver (cascade saves vehicle)
         driver = dr.save(driver);
 
-        vehicle.setVehicleid(driver.getDriverid());
-        vr.save(vehicle);
-
-        ResponseStructure<Driver> rs = new ResponseStructure<>();
         rs.setStatuscode(HttpStatus.CREATED.value());
         rs.setMessage("Driver and Vehicle registered successfully");
         rs.setData(driver);
 
         return rs;
-    } 
+    }
+
     @Value("${locationiq.api.key}")
     private String locationApiKey;
 
@@ -482,10 +505,3 @@ public class DriverService {
 
    
 }
-    
-
-
-
-
-
-

@@ -16,7 +16,7 @@ import jakarta.persistence.OneToOne;
 @Entity
 public class Booking {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	@ManyToOne
     @JoinColumn(name = "customer_id")

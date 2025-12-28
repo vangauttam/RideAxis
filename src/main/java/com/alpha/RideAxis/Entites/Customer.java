@@ -4,16 +4,18 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 @Entity
 public class Customer {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	private String name;
 	private int age;
@@ -26,17 +28,19 @@ public class Customer {
 	@OneToMany
 	@JsonBackReference("booking-customer")
 	private List<Booking> bookinglist;
-	@OneToOne
-	private User user;
+	
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "user_id")
+	private Userr userr;
 
 	
-	public User getUser() {
-		return user;
+	public Userr getUserr() {
+		return userr;
 	}
 
 
-	public void setUser(User user) {
-		this.user = user;
+	public void setUserr(Userr userr) {
+		this.userr = userr;
 	}
 
 
@@ -134,7 +138,7 @@ public class Customer {
 	}
 
 	public Customer(int id, String name, int age, String gender, long mobileno, String emailid, String currentloc,
-			boolean activebookingflag, double penaltyamount, List<Booking> bookinglist, User user) {
+			boolean activebookingflag, double penaltyamount, List<Booking> bookinglist, Userr userr) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -146,7 +150,7 @@ public class Customer {
 		this.activebookingflag = activebookingflag;
 		this.penaltyamount = penaltyamount;
 		this.bookinglist = bookinglist;
-		this.user = user;
+		this.userr = userr;
 	}
 
 
@@ -154,8 +158,8 @@ public class Customer {
 	public String toString() {
 		return "Customer [id=" + id + ", name=" + name + ", age=" + age + ", gender=" + gender + ", mobileno="
 				+ mobileno + ", emailid=" + emailid + ", currentloc=" + currentloc + ", activebookingflag="
-				+ activebookingflag + ", penaltyamount=" + penaltyamount + ", bookinglist=" + bookinglist + ", user="
-				+ user + "]";
+				+ activebookingflag + ", penaltyamount=" + penaltyamount + ", bookinglist=" + bookinglist + ", userr="
+				+ userr + "]";
 	}
 
 

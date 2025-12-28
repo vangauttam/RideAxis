@@ -8,7 +8,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -24,7 +24,7 @@ import com.alpha.RideAxis.DTO.VehicleDetailDTO;
 import com.alpha.RideAxis.Entites.Booking;
 import com.alpha.RideAxis.Entites.Customer;
 import com.alpha.RideAxis.Entites.GeoCordinates;
-import com.alpha.RideAxis.Entites.User;
+import com.alpha.RideAxis.Entites.Userr;
 import com.alpha.RideAxis.Entites.Vehicle;
 import com.alpha.RideAxis.Exception.CustomerNotFoundException;
 
@@ -33,6 +33,7 @@ import com.alpha.RideAxis.Exception.CustomerNotFoundException;
 
 import com.alpha.RideAxis.Repository.BookingRepository;
 import com.alpha.RideAxis.Repository.CustomerRepository;
+import com.alpha.RideAxis.Repository.UserrRepository;
 import com.alpha.RideAxis.Repository.VehicleRepository;
 
 import jakarta.transaction.Transactional;
@@ -48,6 +49,13 @@ public class CustomerService {
 
     @Autowired
     private BookingRepository br;
+    
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+    @Autowired
+    private UserrRepository ur;
+
+
 
     @Value("${locationiq.api.key}")
     private String apiKey;
@@ -64,9 +72,13 @@ public class CustomerService {
     @Autowired
     private GeoLocationService geoService;
 
-    
+    @Transactional
     public ResponseStructure<Customer> registerCustomer(RegCustomerDto dto) {
-
+    	 Userr userr=new Userr();
+         userr.setMobileno(dto.getMobileno());
+         userr.setPassword(passwordEncoder.encode(dto.getPassword()));
+         userr.setRole("CUSTOMER");
+         userr = ur.save(userr);
         Customer customer = new Customer();
         customer.setName(dto.getName());
         customer.setAge(dto.getAge());
@@ -76,11 +88,9 @@ public class CustomerService {
 
         String city = getCityFromCoordinates(dto.getLatitude(), dto.getLongitude());
         customer.setCurrentloc(city);
+        customer.setUserr(userr);
         
-        User user=new User();
-        user.setMobileno(dto.getMobileno());
-        user.setPassword(dto.getPassword());
-        user.setRole("CUSTOMER");
+   
 
         customer = cr.save(customer);
 
