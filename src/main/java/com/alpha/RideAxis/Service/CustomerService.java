@@ -104,7 +104,7 @@ public class CustomerService {
     
     
     
-    private String getCityFromCoordinates(String lat, String lon) {
+    public String getCityFromCoordinates(String lat, String lon) {
 
         RestTemplate restTemplate = new RestTemplate();
 
@@ -132,6 +132,13 @@ public class CustomerService {
 
         return "Unknown Location";
     }
+    public String getCityFromCoordinates(double lat, double lon) {
+        return getCityFromCoordinates(
+                String.valueOf(lat),
+                String.valueOf(lon)
+        );
+    }
+
 
     
     

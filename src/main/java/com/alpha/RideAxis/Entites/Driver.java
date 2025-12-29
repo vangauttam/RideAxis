@@ -36,7 +36,7 @@ public class Driver {
 	
 	
 	@OneToOne(optional = false)
-	@JoinColumn(name = "userr_id", nullable = false)
+	@JoinColumn(name = "user_id", nullable = false)
 	private Userr userr;
 	
 	public Userr getUserr() {
