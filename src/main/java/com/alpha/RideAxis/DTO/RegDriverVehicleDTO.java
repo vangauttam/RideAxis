@@ -1,5 +1,7 @@
 package com.alpha.RideAxis.DTO;
 
+import jakarta.persistence.Column;
+
 public class RegDriverVehicleDTO {
 	private String licenceno;
 	private String upiid;
@@ -13,7 +15,9 @@ public class RegDriverVehicleDTO {
 	private String type;
 	private String model;
 	private int capacity;
+	@Column(name = "latitude")
 	private double latitude;
+	@Column(name = "longitude")
 	private double longitude;
 	private double priceperkm;
 	private double averagespeed;
