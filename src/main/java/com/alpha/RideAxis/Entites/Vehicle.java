@@ -26,7 +26,7 @@ public class Vehicle {
 	private double averagespeed;
 	@OneToOne
 	@MapsId
-	@JoinColumn(name="vehicleid")
+	@JoinColumn(name="driver_id")
 	@JsonIgnore
 	private Driver driver;
 	public Long getVehicleid() {
