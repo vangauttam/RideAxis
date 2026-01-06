@@ -5,6 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.alpha.RideAxis.ResponseStructure;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,6 +38,19 @@ public class GlobalExceptionHandler {
         response.put("message", ex.getMessage());
         response.put("data", null);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(NoCurrentBookingException.class)
+    public ResponseEntity<ResponseStructure<String>> handleNoCurrentBooking(
+            NoCurrentBookingException ex) {
+
+        ResponseStructure<String> rs = new ResponseStructure<>();
+        rs.setStatuscode(HttpStatus.NOT_FOUND.value());
+        rs.setMessage(ex.getMessage());
+        rs.setData(null);
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(rs);
     }
 
     

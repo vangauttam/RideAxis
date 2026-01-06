@@ -65,6 +65,8 @@ public class DriverService {
     private PaymentRepository pr;
     @Autowired
     private UserrRepository ur;
+    
+    private CustomerService cs;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
@@ -78,7 +80,7 @@ public class DriverService {
 
         ResponseStructure<Driver> rs = new ResponseStructure<>();
 
-        // ✅ 1. Check duplicate mobile
+      
         if (ur.existsByMobileno(dto.getMobileno())) {
             rs.setStatuscode(HttpStatus.CONFLICT.value());
             rs.setMessage("Mobile number already registered");
@@ -86,14 +88,14 @@ public class DriverService {
             return rs;
         }
 
-        // ✅ 2. Create User
+        
         Userr userr = new Userr();
         userr.setMobileno(dto.getMobileno());
         userr.setPassword(passwordEncoder.encode(dto.getPassword()));
         userr.setRole("DRIVER");
         userr = ur.save(userr);
 
-        // ✅ 3. Create Driver
+       
         Driver driver = new Driver();
         driver.setLicenceno(dto.getLicenceno());
         driver.setUpiid(dto.getUpiid());
@@ -104,10 +106,10 @@ public class DriverService {
         driver.setMailid(dto.getMailid());
         driver.setStatus("AVAILABLE");
 
-        // 🔥 IMPORTANT: link user
+       
         driver.setUserr(userr);
 
-        // ✅ 4. Create Vehicle
+        
         Vehicle vehicle = new Vehicle();
         vehicle.setVname(dto.getVname());
         vehicle.setVehicleno(dto.getVehicleno());
@@ -120,11 +122,11 @@ public class DriverService {
         vehicle.setAveragespeed(dto.getAveragespeed());
         vehicle.setAvailableStatus("AVAILABLE");
 
-        // ✅ 5. Bi-directional mapping
+       
         driver.setVehicle(vehicle);
         vehicle.setDriver(driver);
 
-        // ✅ 6. Save ONLY driver (cascade saves vehicle)
+      
         driver = dr.save(driver);
 
         rs.setStatuscode(HttpStatus.CREATED.value());

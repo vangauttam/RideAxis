@@ -14,20 +14,16 @@ import com.alpha.RideAxis.Entites.Vehicle;
 
 @Repository
 public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
-	@Query("SELECT v FROM Vehicle v WHERE v.availableStatus = 'Available' AND v.currentcity = :city")
+	@Query("SELECT v FROM Vehicle v WHERE v.availableStatus = 'AVAILABLE' AND v.currentcity = :city")
 	List<Vehicle> findAvailableVehiclesByCity(String city);
 
 	@Query("""
-	        SELECT b FROM Booking b
-	        WHERE b.vehicle.driver.mobileno = :mobileno
-	        AND b.bookingstatus = 'ACTIVE'
-	    """)
-	    Booking findActiveBookingOfDriver(@Param("mobileno") long mobileno);
+			    SELECT b FROM Booking b
+			    WHERE b.vehicle.driver.mobileno = :mobileno
+			    AND b.bookingstatus = 'ACTIVE'
+			""")
+	Booking findActiveBookingOfDriver(@Param("mobileno") long mobileno);
 
 	Optional<Driver> findByDriver(Driver driver);
 
 }
-
-
-
-

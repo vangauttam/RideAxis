@@ -111,41 +111,51 @@ public class AuthController {
 	            throw new MobileAlreadyRegisteredException();
 	        }
 
+	     // ✅ 2. Create User
 	        Userr userr = new Userr();
-	        userr.setMobileno(mobileNo);
+	        userr.setMobileno(dto.getMobileno());
 	        userr.setPassword(passwordEncoder.encode(dto.getPassword()));
 	        userr.setRole("DRIVER");
-	        ur.save(userr);
+	        userr = ur.save(userr);
 
+	        // ✅ 3. Create Driver
 	        Driver driver = new Driver();
-	        driver.setDname(dto.getDname());
-	        driver.setAge(dto.getAge());
-	        driver.setGender(dto.getGender());
-	        driver.setMobileno(mobileNo);
-	        driver.setMailid(dto.getMailid());
 	        driver.setLicenceno(dto.getLicenceno());
 	        driver.setUpiid(dto.getUpiid());
-	        driver.setStatus("Available");
+	        driver.setDname(dto.getDname());
+	        driver.setAge(dto.getAge());
+	        driver.setMobileno(dto.getMobileno());
+	        driver.setGender(dto.getGender());
+	        driver.setMailid(dto.getMailid());
+	        driver.setStatus("AVAILABLE");
+
+	        // 🔥 IMPORTANT: link user
 	        driver.setUserr(userr);
 
-	        dr.save(driver);
-
+	        // ✅ 4. Create Vehicle
 	        Vehicle vehicle = new Vehicle();
-	        vehicle.setDriver(driver);
 	        vehicle.setVname(dto.getVname());
 	        vehicle.setVehicleno(dto.getVehicleno());
 	        vehicle.setType(dto.getType());
 	        vehicle.setModel(dto.getModel());
 	        vehicle.setCapacity(dto.getCapacity());
-	        vehicle.setCurrentcity(
-	                cs.getCityFromCoordinates(dto.getLatitude(), dto.getLongitude())
-	        );
-	        vehicle.setAvailableStatus("Available");
 	        vehicle.setPriceperkm(dto.getPriceperkm());
+	        vehicle.setLatitude(dto.getLatitude());
+	        vehicle.setLongitude(dto.getLongitude());
 	        vehicle.setAveragespeed(dto.getAveragespeed());
+	        vehicle.setAvailableStatus("AVAILABLE");
+	        vehicle.setCurrentcity(
+	        	    cs.getCityFromCoordinates(dto.getLatitude(), dto.getLongitude())
+	        	);
 
-	        vr.save(vehicle);
+	        // ✅ 5. Bi-directional mapping
+	        driver.setVehicle(vehicle);
+	        vehicle.setDriver(driver);
 
+	        // ✅ 6. Save ONLY driver (cascade saves vehicle)
+	        driver = dr.save(driver);
+
+	      
 	        ResponseStructure<String> rs = new ResponseStructure<>();
 	        rs.setStatuscode(200);
 	        rs.setMessage("Driver and vehicle registered successfully");

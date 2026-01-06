@@ -1,6 +1,5 @@
 package com.alpha.RideAxis.Controller;
 
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,7 @@ public class DriverController {
     @Autowired
     private DriverService ds;
 
-    //SAVE
+    // SAVE
     @PostMapping("/register")
     public ResponseEntity<ResponseStructure<Driver>> registerDriverWithVehicle(
             @RequestBody RegDriverVehicleDTO dto) {
@@ -35,6 +34,7 @@ public class DriverController {
                 .status(response.getStatuscode())
                 .body(response);
     }
+
     @PutMapping("/{driverId}/currentcity")
     public ResponseEntity<ResponseStructure<Vehicle>> updateCurrentCity(
             @PathVariable long driverId,
@@ -43,6 +43,7 @@ public class DriverController {
         ResponseStructure<Vehicle> response = ds.updateCurrentCity(driverId, dto);
         return ResponseEntity.status(response.getStatuscode()).body(response);
     }
+
     @GetMapping("/FindDriver")
     public ResponseEntity<ResponseStructure<Driver>> findDriver(
             @RequestParam long mobno) {
@@ -53,6 +54,7 @@ public class DriverController {
                 .status(response.getStatuscode())
                 .body(response);
     }
+
     @DeleteMapping("/deleteDriver")
     public ResponseEntity<ResponseStructure<String>> deleteDriver(@RequestParam long mobno) {
 
@@ -62,8 +64,7 @@ public class DriverController {
                 .status(response.getStatuscode())
                 .body(response);
     }
-    
-    
+
     @GetMapping("/bookingHistory")
     public ResponseEntity<ResponseStructure<List<BookingHistoryDTO>>> getDriverHistory(
             @RequestParam long mobno) {
@@ -72,76 +73,62 @@ public class DriverController {
 
         return ResponseEntity.status(response.getStatuscode()).body(response);
     }
-    
-    
-    
-  
+
     @GetMapping("/payment")
     public ResponseEntity<?> handlePayment(
-                @RequestParam String paytype,
-                @RequestParam(required = false) Integer bookingId) {
+            @RequestParam String paytype,
+            @RequestParam(required = false) Integer bookingId) {
 
-            if (paytype.equalsIgnoreCase("CASH")) {
+        if (paytype.equalsIgnoreCase("CASH")) {
 
-                if (bookingId == null) {
-                    return ResponseEntity.badRequest()
-                            .body("bookingId is required for CASH payment");
-                }
-
-                return ds.payByCash(bookingId,paytype);
+            if (bookingId == null) {
+                return ResponseEntity.badRequest()
+                        .body("bookingId is required for CASH payment");
             }
 
-            if (paytype.equalsIgnoreCase("UPI")) {
+            return ds.payByCash(bookingId, paytype);
+        }
 
-                if (bookingId == null) {
-                    return ResponseEntity.badRequest()
-                            .body("bookingId is required for UPI payment");
-                }
+        if (paytype.equalsIgnoreCase("UPI")) {
 
-                String upiUrl = ds.generateUpiUrl(bookingId);
-
-                ResponseStructure<String> rs = new ResponseStructure<>();
-                rs.setStatuscode(HttpStatus.OK.value());
-                rs.setMessage("UPI URL generated. Complete payment to confirm.");
-                rs.setData(upiUrl);
-
-                return ResponseEntity.ok(rs);
+            if (bookingId == null) {
+                return ResponseEntity.badRequest()
+                        .body("bookingId is required for UPI payment");
             }
 
-            return ResponseEntity.badRequest()
-                    .body("Invalid paytype. Use CASH or UPI");
+            String upiUrl = ds.generateUpiUrl(bookingId);
+
+            ResponseStructure<String> rs = new ResponseStructure<>();
+            rs.setStatuscode(HttpStatus.OK.value());
+            rs.setMessage("UPI URL generated. Complete payment to confirm.");
+            rs.setData(upiUrl);
+
+            return ResponseEntity.ok(rs);
         }
 
-
-        @PostMapping("/confirm")
-        public ResponseEntity<ResponseStructure<String>> confirmUpiPayment(
-                @RequestParam Long paymentId) {
-
-            return ds.confirmUpiPayment(paymentId);
-        }
-        
-        
-        @PutMapping("/cancelbooking")
-        public ResponseEntity<ResponseStructure<String>> cancelBooking(
-                @RequestParam int bookingId,
-                @RequestParam Long driverId) {
-
-            return ds.cancelBookingByDriver(bookingId, driverId);
-        }
-        
-        @GetMapping("/seeActiveBooking")
-        public ResponseEntity<ResponseStructure<ActiveBookingDriverDTO>> seeActiveBooking(
-                @RequestParam long mobileno) {
-            return ds.seeActiveBooking(mobileno);
-        }
-
-        
-        
+        return ResponseEntity.badRequest()
+                .body("Invalid paytype. Use CASH or UPI");
     }
 
+    @PostMapping("/confirm")
+    public ResponseEntity<ResponseStructure<String>> confirmUpiPayment(
+            @RequestParam long bookingId) {
 
+        return ds.confirmUpiPayment(bookingId);
+    }
 
+    @PutMapping("/cancelbooking")
+    public ResponseEntity<ResponseStructure<String>> cancelBooking(
+            @RequestParam int bookingId,
+            @RequestParam Long driverId) {
 
+        return ds.cancelBookingByDriver(bookingId, driverId);
+    }
 
+    @GetMapping("/seeActiveBooking")
+    public ResponseEntity<ResponseStructure<ActiveBookingDriverDTO>> seeActiveBooking(
+            @RequestParam long mobileno) {
+        return ds.seeActiveBooking(mobileno);
+    }
 
-
+}

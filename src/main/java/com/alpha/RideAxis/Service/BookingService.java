@@ -35,7 +35,7 @@ public class BookingService {
     private BookingRepository br;
     @Autowired
     private MailService ms;
-   
+
     private int generateOtp() {
         return 1000 + new Random().nextInt(9000);
     }
@@ -60,38 +60,36 @@ public class BookingService {
         booking.setBookingdate(LocalDate.now());
         booking.setBookingstatus("BOOKED");
         booking.setOtp(generateOtp());
-        booking.setOtpStage("PICKUP");   
+        booking.setOtpStage("PICKUP");
         br.save(booking);
 
-        // Update customer
+       
         customer.getBookinglist().add(booking);
         customer.setActivebookingflag(true);
 
-        // Update vehicle and driver
+        
         veh.setAvailableStatus("BOOKED");
         Driver driver = veh.getDriver();
         if (driver != null) {
             driver.setStatus("BOOKED");
             driver.getBookinglist().add(booking);
         }
-        String message =
-                "Hello " + customer.getName() + ",\n\n" +
+        String message = "Hello " + customer.getName() + ",\n\n" +
                 "Your ride has been successfully booked.\n\n" +
                 "Booking ID : " + booking.getId() + "\n" +
                 "Vehicle    : " + veh.getVname() + " (" + veh.getVehicleno() + ")\n" +
                 "From       : " + booking.getSourcelocation() + "\n" +
                 "To         : " + booking.getDestinationlocation() + "\n" +
                 "Fare       : ₹" + booking.getFare() + "\n" +
-                "Otp        :"+booking.getOtp()+"\n\n"+
+                "Otp        :" + booking.getOtp() + "\n\n" +
                 "Thank you for choosing RideAxis.\n" +
                 "Have a safe journey 🚕";
 
-        // 4️⃣ SEND MAIL
+        
         ms.sendMail(
                 "uttamvanga@gmail.com",
                 "RideAxis - Booking Confirmed",
-                message
-        );
+                message);
 
         ResponseStructure<Booking> rs = new ResponseStructure<>();
         rs.setStatuscode(HttpStatus.OK.value());
@@ -149,7 +147,6 @@ public class BookingService {
             throw new RuntimeException("Booking does not belong to this customer");
         }
 
-
         if ("COMPLETED".equalsIgnoreCase(booking.getBookingstatus())) {
             throw new RuntimeException("Completed ride cannot be cancelled");
         }
@@ -163,7 +160,8 @@ public class BookingService {
         customer.setActivebookingflag(false);
 
         booking.setBookingstatus("CUSTOMER_CANCELLED");
-
+   
+        
         Vehicle vehicle = booking.getVehicle();
         vehicle.setAvailableStatus("AVAILABLE");
 
@@ -180,7 +178,6 @@ public class BookingService {
 
         Booking booking = br.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
-     
 
         booking.setBookingstatus("COMPLETED");
         booking.setOtpStage("DROP");
@@ -190,12 +187,10 @@ public class BookingService {
         customer.setActivebookingflag(false);
 
         Vehicle vehicle = booking.getVehicle();
-        
+
         vehicle.setAvailableStatus("AVAILABLE");
         Driver driver = booking.getVehicle().getDriver();
         driver.setStatus("AVAILABLE");
-        
-      
 
         ResponseStructure<Booking> rs = new ResponseStructure<>();
         rs.setStatuscode(HttpStatus.OK.value());
@@ -204,45 +199,41 @@ public class BookingService {
 
         return ResponseEntity.ok(rs);
     }
-    
+
     public ResponseEntity<ResponseStructure<ActiveBookingDTO>> SeeActiveBooking(long mobno) {
 
-	    Customer customer = cr.findByMobileno(mobno)
-	            .orElseThrow(() -> new CustomerNotFoundException("Customer not found with mobile: " + mobno));
+        Customer customer = cr.findByMobileno(mobno)
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found with mobile: " + mobno));
 
-	    if (customer.isActivebookingflag()) {
+        if (customer.isActivebookingflag()) {
 
-	      
-	        Booking booking = br.findActiveBookingByCustomerId(customer.getId());
+            Booking booking = br.findActiveBookingByCustomerId(customer.getId());
 
-	        
-	        ActiveBookingDTO dto = new ActiveBookingDTO();
-	        dto.setCustomername(customer.getName());
-	        dto.setCustomermobno(customer.getMobileno());
-	        dto.setBooking(booking);
-	        dto.setCurrentlocation(booking.getVehicle().getCurrentcity());
+            ActiveBookingDTO dto = new ActiveBookingDTO();
+            dto.setCustomername(customer.getName());
+            dto.setCustomermobno(customer.getMobileno());
+            dto.setBooking(booking);
+            dto.setCurrentlocation(booking.getVehicle().getCurrentcity());
 
-	        ResponseStructure<ActiveBookingDTO> rs = new ResponseStructure<>();
-	        rs.setStatuscode(HttpStatus.OK.value());
-	        rs.setMessage("Active Booking Fetched Successfully");
-	        rs.setData(dto);
+            ResponseStructure<ActiveBookingDTO> rs = new ResponseStructure<>();
+            rs.setStatuscode(HttpStatus.OK.value());
+            rs.setMessage("Active Booking Fetched Successfully");
+            rs.setData(dto);
 
-	        return new ResponseEntity<ResponseStructure<ActiveBookingDTO>>(rs, HttpStatus.OK);
+            return new ResponseEntity<ResponseStructure<ActiveBookingDTO>>(rs, HttpStatus.OK);
 
-	    } 
-	    else {
+        } else {
 
-	        ResponseStructure<ActiveBookingDTO> rs = new ResponseStructure<>();
-	        rs.setStatuscode(HttpStatus.OK.value());
-	        rs.setMessage("No active booking available for this customer");
-	        rs.setData(null);
+            ResponseStructure<ActiveBookingDTO> rs = new ResponseStructure<>();
+            rs.setStatuscode(HttpStatus.OK.value());
+            rs.setMessage("No active booking available for this customer");
+            rs.setData(null);
 
-	        return new ResponseEntity<ResponseStructure<ActiveBookingDTO>>(rs, HttpStatus.OK);
-	    }
-	    
-	    
-	}
-    
+            return new ResponseEntity<ResponseStructure<ActiveBookingDTO>>(rs, HttpStatus.OK);
+        }
+
+    }
+
     public ResponseEntity<ResponseStructure<Integer>> getotp(int bookingid) {
 
         Booking b = br.findById(bookingid)
@@ -259,6 +250,7 @@ public class BookingService {
 
         return ResponseEntity.ok(rs);
     }
+
     @Transactional
     public ResponseEntity<ResponseStructure<Booking>> startRide(int bookingId, int otp) {
 
@@ -275,9 +267,6 @@ public class BookingService {
 
         booking.setBookingstatus("IN_PROGRESS");
 
-        
-       
-
         ResponseStructure<Booking> rs = new ResponseStructure<>();
         rs.setStatuscode(HttpStatus.OK.value());
         rs.setMessage("Ride started successfully");
@@ -286,12 +275,4 @@ public class BookingService {
         return ResponseEntity.ok(rs);
     }
 
-
 }
-
-
-
-
-
-
-

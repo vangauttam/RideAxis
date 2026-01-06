@@ -13,39 +13,27 @@ import com.alpha.RideAxis.Entites.Vehicle;
 
 public interface BookingRepository extends JpaRepository<Booking, Integer> {
 
-    @Query("SELECT b FROM Booking b WHERE b.customer.id = :customerId AND b.bookingstatus = 'BOOKED'")
-    Booking findActiveBookingByCustomerId(@Param("customerId") int customerId);
-    
-    
+	@Query("SELECT b FROM Booking b WHERE b.customer.id = :customerId AND (b.bookingstatus = 'BOOKED' OR b.bookingstatus = 'IN_PROGRESS' OR b.bookingstatus = 'PAYMENT_PENDING')")
+	Booking findActiveBookingByCustomerId(@Param("customerId") int customerId);
 
-    List<Booking> findByCustomer(Customer customer);
-    
-    
-   
-    @Query("""
-    	    SELECT b
-    	    FROM Booking b
-    	    WHERE b.vehicle.driver.id = :driverId
-    	      AND b.bookingdate = :bookingdate
-    	""")
-    	List<Booking> findByDriverIdAndBookingDate(
-    	        @Param("driverId") long driverId,
-    	        @Param("bookingdate") LocalDate bookingdate
-    	);
+	List<Booking> findByCustomer(Customer customer);
 
+	@Query("""
+			    SELECT b
+			    FROM Booking b
+			    WHERE b.vehicle.driver.id = :driverId
+			      AND b.bookingdate = :bookingdate
+			""")
+	List<Booking> findByDriverIdAndBookingDate(
+			@Param("driverId") long driverId,
+			@Param("bookingdate") LocalDate bookingdate);
 
-    @Query("""
-    	    SELECT b
-    	    FROM Booking b
-    	    WHERE b.vehicle = :vehicle
-    	      AND b.bookingstatus = 'BOOKED'
-    	""")
-    	Booking findActiveBookingByVehicle(@Param("vehicle") Vehicle vehicle);
+	@Query("""
+			    SELECT b
+			    FROM Booking b
+			    WHERE b.vehicle = :vehicle
+			      AND (b.bookingstatus = 'BOOKED' OR b.bookingstatus = 'IN_PROGRESS' OR b.bookingstatus = 'PAYMENT_PENDING')
+			""")
+	Booking findActiveBookingByVehicle(@Param("vehicle") Vehicle vehicle);
 
-
-
-    
-    
-    
-    
 }

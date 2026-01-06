@@ -23,21 +23,12 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
+            HttpServletResponse response,
+            FilterChain filterChain)
             throws ServletException, IOException {
 
-        String path = request.getServletPath();
-
-        // ✅ PUBLIC ENDPOINTS
-        if (
-            path.equals("/auth/login") ||
-            path.equals("/auth/register/customer") ||
-            path.equals("/auth/register/driver")
-        ) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+        // Remove manual path check - let SecurityConfig handle permissions
+        // if (path.equals("/auth/login") ...)
 
         String authHeader = request.getHeader("Authorization");
 
@@ -47,23 +38,19 @@ public class JwtFilter extends OncePerRequestFilter {
             String username = jwtUtils.extractUsername(token);
 
             if (username != null &&
-                SecurityContextHolder.getContext().getAuthentication() == null &&
-                jwtUtils.isTokenValid(token, username)) {
+                    SecurityContextHolder.getContext().getAuthentication() == null &&
+                    jwtUtils.isTokenValid(token, username)) {
 
                 String role = jwtUtils.extractRole(token);
 
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(
-                                username,
-                                null,
-                                Collections.singleton(
-                                        new SimpleGrantedAuthority("ROLE_" + role)
-                                )
-                        );
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                        username,
+                        null,
+                        Collections.singleton(
+                                new SimpleGrantedAuthority("ROLE_" + role)));
 
                 authToken.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request)
-                );
+                        new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }

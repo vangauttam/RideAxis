@@ -12,9 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-
 import com.alpha.RideAxis.DTO.AvailableVehicleDTO;
-
 
 import com.alpha.RideAxis.DTO.BookingHistoryDTO;
 
@@ -27,9 +25,6 @@ import com.alpha.RideAxis.Entites.GeoCordinates;
 import com.alpha.RideAxis.Entites.Userr;
 import com.alpha.RideAxis.Entites.Vehicle;
 import com.alpha.RideAxis.Exception.CustomerNotFoundException;
-
-
-
 
 import com.alpha.RideAxis.Repository.BookingRepository;
 import com.alpha.RideAxis.Repository.CustomerRepository;
@@ -49,13 +44,11 @@ public class CustomerService {
 
     @Autowired
     private BookingRepository br;
-    
+
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
     @Autowired
     private UserrRepository ur;
-
-
 
     @Value("${locationiq.api.key}")
     private String apiKey;
@@ -65,7 +58,7 @@ public class CustomerService {
 
     @Value("${locationiq.api.format}")
     private String format;
-    
+
     @Value("${locationiq.api.search}")
     private String searchApiUrl;
 
@@ -74,11 +67,11 @@ public class CustomerService {
 
     @Transactional
     public ResponseStructure<Customer> registerCustomer(RegCustomerDto dto) {
-    	 Userr userr=new Userr();
-         userr.setMobileno(dto.getMobileno());
-         userr.setPassword(passwordEncoder.encode(dto.getPassword()));
-         userr.setRole("CUSTOMER");
-         userr = ur.save(userr);
+        Userr userr = new Userr();
+        userr.setMobileno(dto.getMobileno());
+        userr.setPassword(passwordEncoder.encode(dto.getPassword()));
+        userr.setRole("CUSTOMER");
+        userr = ur.save(userr);
         Customer customer = new Customer();
         customer.setName(dto.getName());
         customer.setAge(dto.getAge());
@@ -89,8 +82,6 @@ public class CustomerService {
         String city = getCityFromCoordinates(dto.getLatitude(), dto.getLongitude());
         customer.setCurrentloc(city);
         customer.setUserr(userr);
-        
-   
 
         customer = cr.save(customer);
 
@@ -101,18 +92,16 @@ public class CustomerService {
 
         return rs;
     }
-    
-    
-    
+
     public String getCityFromCoordinates(String lat, String lon) {
 
         RestTemplate restTemplate = new RestTemplate();
 
         String url = apiUrl +
-                     "?key=" + apiKey +
-                     "&lat=" + lat +
-                     "&lon=" + lon +
-                     "&format=" + format;
+                "?key=" + apiKey +
+                "&lat=" + lat +
+                "&lon=" + lon +
+                "&format=" + format;
 
         Map<String, Object> response = restTemplate.getForObject(url, Map.class);
 
@@ -132,16 +121,13 @@ public class CustomerService {
 
         return "Unknown Location";
     }
+
     public String getCityFromCoordinates(double lat, double lon) {
         return getCityFromCoordinates(
                 String.valueOf(lat),
-                String.valueOf(lon)
-        );
+                String.valueOf(lon));
     }
 
-
-    
-    
     @Transactional
     public ResponseStructure<String> deleteCustomerByMobile(long mobno) {
 
@@ -162,8 +148,6 @@ public class CustomerService {
 
         return rs;
     }
-
-
 
     public ResponseStructure<Customer> findCustomerByMobile(long mobno) {
 
@@ -187,26 +171,22 @@ public class CustomerService {
         return rs;
     }
 
-    
-    
     public ResponseStructure<AvailableVehicleDTO> seeallAvailableVehicles(long mobno, String destination) {
 
         ResponseStructure<AvailableVehicleDTO> rs = new ResponseStructure<>();
 
-        Customer cust = cr.findByMobileno(mobno).orElseThrow(() -> new CustomerNotFoundException("Customer not found with mobile: " + mobno));
+        Customer cust = cr.findByMobileno(mobno)
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found with mobile: " + mobno));
 
-      
         GeoCordinates destCoords = geoService.validateAndGetCoordinates(destination);
 
-       
         GeoCordinates sourceCoords = geoService.validateAndGetCoordinates(cust.getCurrentloc());
 
         double distance = geoService.calculateDistance(
                 sourceCoords.getLatitude(),
                 sourceCoords.getLongitude(),
                 destCoords.getLatitude(),
-                destCoords.getLongitude()
-        );
+                destCoords.getLongitude());
 
         List<Vehicle> vehicles = vr.findAvailableVehiclesByCity(cust.getCurrentloc());
 
@@ -225,7 +205,6 @@ public class CustomerService {
 
         return rs;
     }
-
 
     private List<VehicleDetailDTO> mapVehicleDetails(List<Vehicle> vehicles, double distance) {
 
@@ -246,11 +225,10 @@ public class CustomerService {
             list.add(vehicledetaildto);
         }
 
-        return list; 
-        
+        return list;
+
     }
-    
-    
+
     public ResponseStructure<List<BookingHistoryDTO>> getCustomerBookingHistory(long mobno) {
 
         ResponseStructure<List<BookingHistoryDTO>> rs = new ResponseStructure<>();
@@ -266,25 +244,22 @@ public class CustomerService {
 
         Customer customer = optionalCustomer.get();
 
-        
         List<Booking> bookings = br.findByCustomer(customer);
 
-        
         List<RideDetailsDTO> ridedetailsdto = new ArrayList<>();
-        
-        double totalamount=0;
+
+        double totalamount = 0;
 
         for (Booking b : bookings) {
 
-        	RideDetailsDTO dto = new RideDetailsDTO();
+            RideDetailsDTO dto = new RideDetailsDTO();
 
-           
             dto.setSourceloc(b.getSourcelocation());
             dto.setDestinationloc(b.getDestinationlocation());
             dto.setFare(b.getFare());
             dto.setDistanceTravelled(b.getDistancetravlled());
-            totalamount=totalamount+b.getFare();
-            
+            dto.setPaymentstatus(b.getPaymentstatus());
+            totalamount = totalamount + b.getFare();
 
             ridedetailsdto.add(dto);
         }
