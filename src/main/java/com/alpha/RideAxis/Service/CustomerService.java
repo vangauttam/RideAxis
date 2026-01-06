@@ -195,7 +195,7 @@ public class CustomerService {
         AvailableVehicleDTO availablevehicledto = new AvailableVehicleDTO();
         availablevehicledto.setCustomer(cust);
         availablevehicledto.setSource(cust.getCurrentloc());
-        availablevehicledto.setDestinaton(destination);
+        availablevehicledto.setDestination(destination);
         availablevehicledto.setDistance(distance);
         availablevehicledto.setAvailableVehicles(dtolist);
 
