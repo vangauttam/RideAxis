@@ -71,7 +71,7 @@ export interface AvailableVehicleDTO {
     customer: any; // Using any for now to avoid circular dependency or deep typing if not needed
     distance: number;
     source: string;
-    destinaton: string; // Backend typo maintained
+    destination: string; // Backend typo corrected
     availableVehicles: VehicleDetailDTO[];
 }
 

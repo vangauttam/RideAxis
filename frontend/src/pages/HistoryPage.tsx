@@ -3,12 +3,11 @@ import { useAuth } from '../context/AuthContext';
 import { customerService } from '../services/customerService';
 import { driverService } from '../services/driverService';
 import type { BookingHistoryDTO } from '../types';
-import { Car, ArrowLeft } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Car } from 'lucide-react';
+import { Header } from '../components/Header';
 
 const HistoryPage = () => {
     const { user } = useAuth();
-    const navigate = useNavigate();
     const [history, setHistory] = useState<BookingHistoryDTO | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -45,12 +44,7 @@ const HistoryPage = () => {
         <div className="min-h-screen bg-gray-50 flex flex-col">
             <div className="flex-1 max-w-2xl w-full mx-auto p-4 md:p-6 space-y-6">
 
-                <div className="flex items-center space-x-4 mb-6">
-                    <button onClick={() => navigate('/dashboard')} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                        <ArrowLeft className="w-6 h-6" />
-                    </button>
-                    <h1 className="text-3xl font-bold tracking-tight text-gray-900">Your Rides</h1>
-                </div>
+                <Header title="Your Rides" />
 
                 {isLoading ? (
                     <div className="flex flex-col items-center justify-center py-20 space-y-4">

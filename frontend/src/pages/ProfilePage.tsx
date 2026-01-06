@@ -3,9 +3,10 @@ import { useAuth } from '../context/AuthContext';
 import { driverService } from '../services/driverService';
 import { customerService } from '../services/customerService';
 import api from '../services/api';
-import { MapPin, Phone, Mail, User as UserIcon, ArrowLeft } from 'lucide-react';
+import { MapPin, Phone, Mail, User as UserIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/Button';
+import { Header } from '../components/Header';
 
 const ProfilePage = () => {
     const { user, logout } = useAuth();
@@ -80,12 +81,7 @@ const ProfilePage = () => {
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
             <div className="flex-1 max-w-2xl w-full mx-auto p-4 md:p-6 space-y-6">
-                <div className="flex items-center space-x-4 mb-6">
-                    <button onClick={() => navigate('/dashboard')} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                        <ArrowLeft className="w-6 h-6" />
-                    </button>
-                    <h1 className="text-3xl font-bold tracking-tight text-gray-900">Profile</h1>
-                </div>
+                <Header title="Profile" />
 
                 {isLoading ? (
                     <div className="flex justify-center py-20"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-black"></div></div>
