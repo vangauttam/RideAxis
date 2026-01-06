@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #000000;
+  /* Pure Black */
+  --color-secondary: #ffffff;
+  --color-accent: #3b82f6;
+  /* Electric Blue */
+  --font-sans: 'Outfit', 'Inter', system-ui, sans-serif;
+
+  --animate-fade-in: fade-in 0.5s ease-out;
+  --animate-slide-up: slide-up 0.5s ease-out;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slide-up {
+    from {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+}
+
+/* Import Outfit Font */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+body {
+  @apply bg-gray-50 text-gray-900 antialiased font-sans;
+}
+
+/* Glassmorphism Utilities */
+.glass {
+  @apply bg-white/10 backdrop-blur-lg border border-white/20 shadow-xl;
+}
+
+.glass-dark {
+  @apply bg-black/60 backdrop-blur-xl border border-white/10 shadow-2xl;
+}
+
+.input-premium {
+  @apply w-full bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-xl focus:ring-black focus:border-black block p-4 transition-all duration-200 shadow-sm hover:bg-white;
+}
+
+.btn-primary {
+  @apply w-full text-white bg-black hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-xl text-lg px-5 py-4 text-center transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl;
+}
+
+.btn-secondary {
+  @apply w-full text-black bg-white border border-gray-200 hover:bg-gray-50 focus:ring-4 focus:ring-gray-100 font-medium rounded-xl text-lg px-5 py-4 text-center transition-all duration-300 shadow-sm hover:shadow-md;
+}
