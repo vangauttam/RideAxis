@@ -8,6 +8,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+
 @Entity
 @Table(name = "vehicles")
 public class Vehicle {
@@ -26,94 +27,122 @@ public class Vehicle {
 	private double averagespeed;
 	@OneToOne
 	@MapsId
-	@JoinColumn(name="driver_id")
+	@JoinColumn(name = "driver_id")
 	@JsonIgnore
 	private Driver driver;
+
 	public Long getVehicleid() {
 		return vehicleid;
 	}
+
 	public void setVehicleid(Long vehicleid) {
 		this.vehicleid = vehicleid;
 	}
+
 	public String getVname() {
 		return vname;
 	}
+
 	public void setVname(String vname) {
 		this.vname = vname;
 	}
+
 	public String getVehicleno() {
 		return vehicleno;
 	}
+
 	public void setVehicleno(String vehicleno) {
 		this.vehicleno = vehicleno;
 	}
+
 	public String getType() {
 		return type;
 	}
+
 	public void setType(String type) {
 		this.type = type;
 	}
+
 	public String getModel() {
 		return model;
 	}
+
 	public void setModel(String model) {
 		this.model = model;
 	}
+
 	public int getCapacity() {
 		return capacity;
 	}
+
 	public void setCapacity(int capacity) {
 		this.capacity = capacity;
 	}
+
 	public String getCurrentcity() {
 		return currentcity;
 	}
+
 	public void setCurrentcity(String currentcity) {
 		this.currentcity = currentcity;
 	}
+
 	public String getAvailableStatus() {
 		return availableStatus;
 	}
+
 	public void setAvailableStatus(String availableStatus) {
 		this.availableStatus = availableStatus;
 	}
+
 	public double getPriceperkm() {
 		return priceperkm;
 	}
+
 	public void setPriceperkm(double priceperkm) {
 		this.priceperkm = priceperkm;
 	}
+
 	public double getLatitude() {
 		return latitude;
 	}
+
 	public void setLatitude(double latitude) {
 		this.latitude = latitude;
 	}
+
 	public double getLongitude() {
 		return longitude;
 	}
+
 	public void setLongitude(double longitude) {
 		this.longitude = longitude;
 	}
+
 	public double getAveragespeed() {
 		return averagespeed;
 	}
+
 	public void setAveragespeed(double averagespeed) {
 		this.averagespeed = averagespeed;
 	}
+
 	public Driver getDriver() {
 		return driver;
 	}
+
 	public void setDriver(Driver driver) {
 		this.driver = driver;
 	}
+
 	@Override
 	public String toString() {
 		return "Vehicle [vehicleid=" + vehicleid + ", vname=" + vname + ", vehicleno=" + vehicleno + ", type=" + type
 				+ ", model=" + model + ", capacity=" + capacity + ", currentcity=" + currentcity + ", availableStatus="
 				+ availableStatus + ", priceperkm=" + priceperkm + ", latitude=" + latitude + ", longitude=" + longitude
-				+ ", averagespeed=" + averagespeed + ", driver=" + driver + "]";
+				+ ", averagespeed=" + averagespeed + "]";
 	}
+
 	public Vehicle(Long vehicleid, String vname, String vehicleno, String type, String model, int capacity,
 			String currentcity, String availableStatus, double priceperkm, double latitude, double longitude,
 			double averagespeed, Driver driver) {
@@ -132,6 +161,7 @@ public class Vehicle {
 		this.averagespeed = averagespeed;
 		this.driver = driver;
 	}
+
 	public Vehicle() {
 		super();
 		// TODO Auto-generated constructor stub

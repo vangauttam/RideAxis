@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+
 @Entity
 public class Customer {
 	@Id
@@ -28,110 +29,91 @@ public class Customer {
 	@OneToMany
 	@JsonBackReference("booking-customer")
 	private List<Booking> bookinglist;
-	
+
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "user_id")
 	private Userr userr;
 
-	
 	public Userr getUserr() {
 		return userr;
 	}
 
-
 	public void setUserr(Userr userr) {
 		this.userr = userr;
 	}
-
 
 	public Customer() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-
 	public String getName() {
 		return name;
 	}
-
 
 	public void setName(String name) {
 		this.name = name;
 	}
 
-
 	public int getAge() {
 		return age;
 	}
-
 
 	public void setAge(int age) {
 		this.age = age;
 	}
 
-
 	public String getGender() {
 		return gender;
 	}
-
 
 	public void setGender(String gender) {
 		this.gender = gender;
 	}
 
-
 	public long getMobileno() {
 		return mobileno;
 	}
-
 
 	public void setMobileno(long mobileno) {
 		this.mobileno = mobileno;
 	}
 
-
 	public String getEmailid() {
 		return emailid;
 	}
-
 
 	public void setEmailid(String emailid) {
 		this.emailid = emailid;
 	}
 
-
 	public String getCurrentloc() {
 		return currentloc;
 	}
-
 
 	public void setCurrentloc(String currentloc) {
 		this.currentloc = currentloc;
 	}
 
-
 	public boolean isActivebookingflag() {
 		return activebookingflag;
 	}
 
-
 	public void setActivebookingflag(boolean activebookingflag) {
 		this.activebookingflag = activebookingflag;
 	}
+
 	public double getPenaltyamount() {
 		return penaltyamount;
 	}
-
 
 	public void setPenaltyamount(double penaltyamount) {
 		this.penaltyamount = penaltyamount;
 	}
 
-
 	public List<Booking> getBookinglist() {
 		return bookinglist;
 	}
-
 
 	public void setBookinglist(List<Booking> bookinglist) {
 		this.bookinglist = bookinglist;
@@ -153,24 +135,21 @@ public class Customer {
 		this.userr = userr;
 	}
 
-
-@Override
+	@Override
 	public String toString() {
 		return "Customer [id=" + id + ", name=" + name + ", age=" + age + ", gender=" + gender + ", mobileno="
 				+ mobileno + ", emailid=" + emailid + ", currentloc=" + currentloc + ", activebookingflag="
-				+ activebookingflag + ", penaltyamount=" + penaltyamount + ", bookinglist=" + bookinglist + ", userr="
+				+ activebookingflag + ", penaltyamount=" + penaltyamount + ", userr="
 				+ userr + "]";
 	}
 
-
-public int getId() {
+	public int getId() {
 		// TODO Auto-generated method stub
 		return id;
 	}
+
 	public void setId(int id) {
 		this.id = id;
 	}
-	
-	
 
 }

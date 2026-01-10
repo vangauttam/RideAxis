@@ -454,7 +454,6 @@ const CustomerHome = () => {
                                     {(activeBooking.booking.bookingstatus !== 'IN_PROGRESS' && activeBooking.booking.bookingStatus !== 'IN_PROGRESS') && (
                                         <Button variant="outline" className="w-full border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300" onClick={handleCancel}>Cancel</Button>
                                     )}
-                                    <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white border-none shadow-lg shadow-blue-200">Share Status</Button>
                                 </div>
                             </>
                         )}

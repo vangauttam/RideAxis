@@ -15,6 +15,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+
 @Entity
 @Table(name = "drivers")
 public class Driver {
@@ -31,100 +32,125 @@ public class Driver {
 	private String gender;
 	private String mailid;
 	@JsonIgnore
-	@OneToOne(mappedBy = "driver",cascade = CascadeType.ALL)
+	@OneToOne(mappedBy = "driver", cascade = CascadeType.ALL)
 	private Vehicle vehicle;
-	
-	
+
 	@OneToOne(optional = false)
 	@JoinColumn(name = "user_id", nullable = false)
 	private Userr userr;
-	
+
 	public Userr getUserr() {
 		return userr;
 	}
+
 	public void setUserr(Userr userr) {
 		this.userr = userr;
 	}
-	@OneToMany
+
+	@OneToMany(cascade = CascadeType.ALL)
+	@JsonIgnore
 	private List<Booking> bookinglist;
+
 	public List<Booking> getBookinglist() {
 		return bookinglist;
 	}
+
 	public void setBookinglist(List<Booking> bookinglist) {
 		this.bookinglist = bookinglist;
 	}
+
 	public Long getDriverid() {
 		return driverid;
 	}
+
 	public void setDriverid(Long driverid) {
 		this.driverid = driverid;
 	}
+
 	public String getLicenceno() {
 		return licenceno;
 	}
+
 	public void setLicenceno(String licenceno) {
 		this.licenceno = licenceno;
 	}
+
 	public String getUpiid() {
 		return upiid;
 	}
+
 	public void setUpiid(String upiid) {
 		this.upiid = upiid;
 	}
+
 	public String getDname() {
 		return dname;
 	}
+
 	public void setDname(String dname) {
 		this.dname = dname;
 	}
+
 	public String getStatus() {
 		return status;
 	}
+
 	public void setStatus(String status) {
 		this.status = status;
 	}
+
 	public int getAge() {
 		return age;
 	}
+
 	public void setAge(int age) {
 		this.age = age;
 	}
+
 	public long getMobileno() {
 		return mobileno;
 	}
+
 	public void setMobileno(long mobileno) {
 		this.mobileno = mobileno;
 	}
+
 	public String getGender() {
 		return gender;
 	}
+
 	public void setGender(String gender) {
 		this.gender = gender;
 	}
+
 	public String getMailid() {
 		return mailid;
 	}
+
 	public void setMailid(String mailid) {
 		this.mailid = mailid;
 	}
+
 	public Vehicle getVehicle() {
 		return vehicle;
 	}
+
 	public void setVehicle(Vehicle vehicle) {
 		this.vehicle = vehicle;
 	}
-	
+
 	public Driver() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+
 	@Override
 	public String toString() {
 		return "Driver [driverid=" + driverid + ", licenceno=" + licenceno + ", upiid=" + upiid + ", dname=" + dname
 				+ ", status=" + status + ", age=" + age + ", mobileno=" + mobileno + ", gender=" + gender + ", mailid="
-				+ mailid + ", vehicle=" + vehicle + ", userr=" + userr + ", bookinglist=" + bookinglist + "]";
+				+ mailid + ", userr=" + userr + "]";
 	}
-	
+
 	public Driver(Long driverid, String licenceno, String upiid, String dname, String status, int age, long mobileno,
 			String gender, String mailid, Vehicle vehicle, Userr userr, List<Booking> bookinglist) {
 		super();
@@ -141,6 +167,5 @@ public class Driver {
 		this.userr = userr;
 		this.bookinglist = bookinglist;
 	}
-	
 
 }
