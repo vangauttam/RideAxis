@@ -32,7 +32,7 @@ const RegisterCustomer = () => {
                     longitude: position.coords.longitude.toString()
                 }));
                 setLocationStatus('Location detected ✅');
-            }, async (error) => {
+            }, async (_error) => {
                 console.warn("Location error (HTTP), trying IP fallback...");
                 try {
                     const res = await fetch('https://ipapi.co/json/');
