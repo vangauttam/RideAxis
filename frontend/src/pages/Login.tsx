@@ -60,7 +60,7 @@ const Login = () => {
                     {/* Header */}
                     <div className="text-center space-y-2">
                         <div className="mx-auto w-24 h-24 rounded-3xl bg-black border-4 border-white shadow-2xl overflow-hidden flex items-center justify-center transform hover:scale-105 transition-transform duration-300">
-                            <img src="/src/assets/logo.png" alt="RideAxis" className="w-full h-full object-cover scale-110" />
+                            <img src="/logo.png" alt="RideAxis" className="w-full h-full object-cover scale-110" />
                         </div>
                         <h1 className="text-4xl font-bold tracking-tight text-gray-900 mt-4">Welcome Back</h1>
                         <p className="text-gray-500 text-lg">Enter your credentials to access your account</p>
