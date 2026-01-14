@@ -20,7 +20,7 @@ const Dashboard = () => {
             {/* Logo Watermark */}
             <div className="absolute top-4 left-4 md:top-6 md:left-6 z-[9999]">
                 <div className="w-10 h-10 md:w-14 md:h-14 rounded-2xl bg-black border-2 border-white shadow-xl overflow-hidden pointer-events-none">
-                    <img src="/src/assets/logo.png" alt="RideAxis" className="w-full h-full object-cover scale-110" />
+                    <img src="/logo.png" alt="RideAxis" className="w-full h-full object-cover scale-110" />
                 </div>
             </div>
 
