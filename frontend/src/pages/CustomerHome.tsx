@@ -229,9 +229,11 @@ const CustomerHome = () => {
             await customerService.bookVehicle(parseInt(user.mobile), bookingDto);
             // Wait for next poll to update status
             setAvailableVehicles([]); // Clear selection
-        } catch (error) {
+            alert('Ride Booked Successfully!');
+        } catch (error: any) {
             console.error(error);
-            alert('Booking failed');
+            const msg = error.response?.data?.message || 'Booking failed';
+            alert('Error: ' + msg);
         } finally {
             setIsLoading(false);
         }
