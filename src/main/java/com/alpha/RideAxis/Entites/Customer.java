@@ -26,9 +26,9 @@ public class Customer {
 	private String currentloc;
 	private boolean activebookingflag;
 	private double penaltyamount;
-	@OneToMany
+	@OneToMany(mappedBy = "customer")
 	@JsonBackReference("booking-customer")
-	private List<Booking> bookinglist;
+	private List<Booking> bookinglist = new java.util.ArrayList<>();
 
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "user_id")

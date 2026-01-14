@@ -49,7 +49,7 @@ public class Driver {
 
 	@OneToMany(cascade = CascadeType.ALL)
 	@JsonIgnore
-	private List<Booking> bookinglist;
+	private List<Booking> bookinglist = new java.util.ArrayList<>();
 
 	public List<Booking> getBookinglist() {
 		return bookinglist;
